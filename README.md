@@ -1,13 +1,14 @@
-ZF HAL
+ZF JsonLD
 ======
 
-[![Build Status](https://travis-ci.org/zfcampus/zf-hal.png)](https://travis-ci.org/zfcampus/zf-hal)
+Place note that this package is still in testing phase and is not ready for production
+------------
+
 
 Introduction
 ------------
 
-This module provides the ability to generate [Hypermedia Application
-Language](http://tools.ietf.org/html/draft-kelly-json-hal-06) JSON representations.
+This module provides the ability to generate [Json-LD](https://www.w3.org/TR/json-ld/) representations.
 
 Requirements
 ------------
@@ -20,14 +21,14 @@ Installation
 Run the following `composer` command:
 
 ```console
-$ composer require "zfcampus/zf-hal:~1.0-dev"
+$ composer require "luomus/zf-jsonld:@dev-master"
 ```
 
 Alternately, manually add the following to your `composer.json`, in the `require` section:
 
 ```javascript
 "require": {
-    "zfcampus/zf-hal": "~1.0-dev"
+    "zfcampus/zf-jsonld": "@dev-master"
 }
 ```
 
@@ -41,7 +42,7 @@ return array(
     /* ... */
     'modules' => array(
         /* ... */
-        'ZF\Hal',
+        'ZF\JsonLD',
     ),
     /* ... */
 );
@@ -52,26 +53,26 @@ Configuration
 
 ### User Configuration
 
-This module utilizes the top level key `zf-hal` for user configuration.
+This module utilizes the top level key `zf-jsonld` for user configuration.
 
 #### Key: `renderer`
 
-This is a configuration array used to configure the `zf-hal` `Hal` view helper/controller plugin.  It
+This is a configuration array used to configure the `zf-jsonld` `JsonLD` view helper/controller plugin.  It
 consists of the following keys:
 
 - `default_hydrator` - when present, this named hydrator service will be used as the default
-  hydrator by the `Hal` plugin when no hydrator is configured for an entity class.
-- `render_embedded_entities` - boolean, default `true`, to render full embedded entities in HAL
+  hydrator by the `JsonLD` plugin when no hydrator is configured for an entity class.
+- `render_member_entities` - boolean, default `true`, to render full embedded entities in JsonLD
   responses; if `false`, embedded entities will contain only their relational links.
-- `render_collections` - boolean, default is `true`, to render collections in HAL responses; if
+- `render_collections` - boolean, default is `true`, to render collections in JsonLD responses; if
   `false`, only a collection's relational links will be rendered.
-- `hydrators` - a map of entity class names to hydrator service names that the `Hal` plugin can use
+- `hydrators` - a map of entity class names to hydrator service names that the `JsonLD` plugin can use
   when hydrating entities.
 
 #### Key: `metadata_map`
 
-The metadata map is used to hint to the `Hal` plugin how it should render objects of specific
-class types. When the `Hal` plugin encounters an object found in the metadata map, it will use the
+The metadata map is used to hint to the `JsonLD` plugin how it should render objects of specific
+class types. When the `JsonLD` plugin encounters an object found in the metadata map, it will use the
 configuration for that class when creating a representation; this information typically indicates
 how to generate relational links, how to serialize the object, and whether or not it represents a
 collection.
@@ -99,11 +100,12 @@ Each class in the metadata map may contain one or more of the following configur
 - `force_self_link` - boolean; set whether a self-referencing link should be automatically generated for the entity.
   Defaults to `true` (since its recommended).
 
-The `links` property is an array of arrays, each with the following structure:
+The `properties` property is an array of arrays, each with the following structure:
 
 ```php
 array(
-    'rel'   => 'link relation',
+    'key'   => 'properties keyword',
+    'value' => 'value of the property', // OR
     'url'   => 'string absolute URI to use', // OR
     'route' => array(
         'name'    => 'route name for this link',
@@ -111,12 +113,12 @@ array(
         'options' => array( /* any options to pass to the router */ ),
     ),
 ),
-// repeat as needed for any additional relational links
+// repeat as needed for any additional properties
 ```
 
 #### Key: `options`
 
-The options key is used to configure general options of the Hal plugin.
+The options key is used to configure general options of the JsonLD plugin.
 For now we have only one option available who contains the following configuration key:
 
 - `use_proxy` - boolean; set to `true` when you are using a proxy (for using HTTP_X_FORWARDED_PROTO, HTTP_X_FORWARDED_HOST, and HTTP_X_FORWARDED_PROTO instead of SSL HTTPS, HTTP_HOST, SERVER_PORT)
@@ -127,11 +129,11 @@ The following configuration is present to ensure the proper functioning of this 
 a ZF2-based application.
 
 ```php
-// Creates a "HalJson" selector for use with zfcampus/zf-content-negotiation
+// Creates a "JsonLD" selector for use with zfcampus/zf-content-negotiation
 'zf-content-negotiation' => array(
     'selectors' => array(
-        'HalJson' => array(
-            'ZF\Hal\View\HalJsonModel' => array(
+        'JsonLD' => array(
+            'ZF\JsonLD\View\JsonLDModel' => array(
                 'application/json',
                 'application/*+json',
             ),
@@ -145,10 +147,10 @@ ZF2 Events
 
 ### Events
 
-#### ZF\Hal\Plugin\Hal Event Manager
+#### ZF\JsonLD\Plugin\JsonLD Event Manager
 
-The `ZF\Hal\Plugin\Hal` triggers several events during its lifecycle. From the `EventManager`
-instance composed into the HAL plugin, you may attach to the following events:
+The `ZF\JsonLD\Plugin\JsonLD` triggers several events during its lifecycle. From the `EventManager`
+instance composed into the JsonLD plugin, you may attach to the following events:
 
 - `renderCollection`
 - `renderCollection.post`
@@ -169,11 +171,11 @@ class Module
         $app = $e->getTarget();
         $services = $app->getServiceManager();
         $helpers  = $services->get('ViewHelperManager');
-        $hal      = $helpers->get('Hal');
+        $jsonLD   = $helpers->get('JsonLD');
 
-        // The HAL plugin's EventManager instance does not compose a SharedEventManager,
+        // The JsonLD plugin's EventManager instance does not compose a SharedEventManager,
         // so you must attach directly to it.
-        $hal->getEventManager()->attach('renderEntity', array($this, 'onRenderEntity'));
+        $jsonLD->getEventManager()->attach('renderEntity', array($this, 'onRenderEntity'));
     }
 
     public function onRenderEntity($e)
@@ -184,9 +186,9 @@ class Module
             return;
         }
 
-        // Add a "describedBy" relational link
-        $entity->getLinks()->add(\ZF\Hal\Link\Link::factory(array(
-            'rel' => 'describedBy',
+        // Add a "describedBy" property
+        $entity->getProperties()->add(\ZF\JsonLD\Property\Property::factory(array(
+            'key' => 'describedBy',
             'route' => array(
                 'name' => 'my/api/docs',
             ),
@@ -198,25 +200,25 @@ class Module
 Notes on individual events:
 
 - `renderCollection` defines one parameter, `collection`, which is the
-  `ZF\Hal\Collection` being rendered.
+  `ZF\JsonLD\Collection` being rendered.
 - `renderCollection.post` defines two parameters: `collection`, which is the
-  `ZF\Hal\Collection` being rendered, and `payload`, an `ArrayObject`
+  `ZF\JsonLD\Collection` being rendered, and `payload`, an `ArrayObject`
   representation of the collection, including the page count, size, and total
   items, and links.
 - `renderEntity` defines one parameter, `entity`, which is the
-  `ZF\Hal\Entity` being rendered.
+  `ZF\JsonLD\Entity` being rendered.
 - `renderEntity.post` defines two parameters: `entity`, which is the
-  `ZF\Hal\Entity` being rendered, and `payload`, an `ArrayObject`
+  `ZF\JsonLD\Entity` being rendered, and `payload`, an `ArrayObject`
   representation of the entity, including links.
-- `createLink` defines the following event parameters:
+- `createProperty` defines the following event parameters:
   - `route`, the route name to use when generating the link, if any.
   - `id`, the entity identifier value to use when generating the link, if any.
   - `entity`, the entity for which the link is being generated, if any.
   - `params`, any additional routing parameters to use when generating the link.
 - `renderCollection.entity` defines the following event parameters:
-  - `collection`, the `ZF\Hal\Collection` to which the entity belongs.
+  - `collection`, the `ZF\JsonLD\Collection` to which the entity belongs.
   - `entity`, the current entity being rendered; this may or may not be a
-    `ZF\Hal\Entity`.
+    `ZF\JsonLD\Entity`.
   - `route`, the route name for the current entity.
   - `routeParams`, route parameters to use when generating links for the current
     entity.
@@ -227,10 +229,10 @@ Notes on individual events:
 
 ### Listeners
 
-#### ZF\Hal\Module::onRender
+#### ZF\JsonLD\Module::onRender
 
 This listener is attached to `MvcEvent::EVENT_RENDER` at priority `100`.  If the controller service
-result is a `HalJsonModel`, this listener attaches the `ZF\Hal\JsonStrategy` to the view at
+result is a `JsonLDModel`, this listener attaches the `ZF\JsonLD\JsonStrategy` to the view at
 priority `200`.
 
 ZF2 Services
@@ -238,70 +240,76 @@ ZF2 Services
 
 ### Models
 
-#### ZF\Hal\Collection
+#### ZF\JsonLD\Collection
 
-`Collection` is responsible for modeling general collections as HAL collections, and composing
+`Collection` is responsible for modeling general collections as JsonLD collections, and composing
 relational links.
 
-#### ZF\Hal\Entity
+#### ZF\JsonLD\Entity
 
-`Entity` is responsible for modeling general purpose entities and plain objects as HAL entities, and
+`Entity` is responsible for modeling general purpose entities and plain objects as JsonLD entities, and
 composing relational links.
 
-#### ZF\Hal\Link\Link
+#### ZF\JsonLD\Property\Property
 
-`Link` is responsible for modeling a relational link.  The `Link` class also has a static
-`factory()` method that can take an array of information as an argument to produce valid `Link`
+`Property` is responsible for modeling a property.  The `Property` class also has a static
+`factory()` method that can take an array of information as an argument to produce valid `Property`
 instances.
 
-#### ZF\Hal\Link\LinkCollection
+#### ZF\JsonLD\Property\PropertyCollection
 
-`LinkCollection` is a model responsible for aggregating a collection of `Link` instances.
+`PropertyCollection` is a model responsible for aggregating a collection of `Property` instances.
 
-#### ZF\Hal\Metadata\Metadata
+#### ZF\JsonLD\Metadata\Metadata
 
 `Metadata` is responsible for collecting all the necessary dependencies, hydrators and other
-information necessary to create HAL entities, links, or collections.
+information necessary to create JsonLD entities, links, or collections.
 
-#### ZF\Hal\Metadata\MetadataMap
+#### ZF\JsonLD\Metadata\MetadataMap
 
 The `MetadataMap` aggregates an array of class name keyed `Metadata` instances to be used in
-producing HAL entities, links, or collections.
+producing JsonLD entities, links, or collections.
 
 ### Extractors
 
-#### ZF\Hal\Extractor\LinkExtractor
+#### ZF\JsonLD\Extractor\PropertyExtractor
 
-`LinkExtractor` is responsible for extracting a link representation from `Link` instance.
+`PropertyExtractor` is responsible for extracting a property representation from `Property` instance.
 
-#### ZF\Hal\Extractor\LinkCollectionExtractor
+#### ZF\JsonLD\Extractor\PropertyCollectionExtractor
 
-`LinkCollectionExtractor` is responsible for extracting a collection of `Link` instances. It also
-composes a `LinkExtractor` for extracting individual links.
+`PropertyCollectionExtractor` is responsible for extracting a collection of `Property` instances. It also
+composes a `PropertyExtractor` for extracting individual links.
 
 ### Controller Plugins
 
-#### ZF\Hal\Plugin\Hal (a.k.a. "Hal")
+#### ZF\JsonLD\Plugin\JsonLD (a.k.a. "JsonLD")
 
 This class operates both as a view helper and as a controller plugin. It is responsible for
-providing controllers the facilities to generate HAL data models, as well as rendering relational
-links and HAL data structures.
+providing controllers the facilities to generate JsonLD data models, as well as rendering properties
+and JsonLD data structures.
 
 ### View Layer
 
-#### ZF\Hal\View\HalJsonModel
+#### ZF\JsonLD\View\JsonLDModel
 
-`HalJsonModel` is a view model that when used as the result of a controller service response
-signifies to the `zf-hal` module that the data within the model should be utilized to
-produce a JSON HAL representation.
+`JsonLDModel` is a view model that when used as the result of a controller service response
+signifies to the `zf-jsonld` module that the data within the model should be utilized to
+produce a JSON LD representation.
 
-#### ZF\Hal\View\HalJsonRenderer
+#### ZF\JsonLD\View\JsonLDRenderer
 
-`HalJsonRenderer` is a view renderer responsible for rendering `HalJsonModel` instances. In turn,
-this renderer will call upon the `Hal` plugin/view helper in order to transform the model content
-(an `Entity` or `Collection`) into a HAL representation.
+`JsonLDRenderer` is a view renderer responsible for rendering `JsonLDModel` instances. In turn,
+this renderer will call upon the `JsonLD` plugin/view helper in order to transform the model content
+(an `Entity` or `Collection`) into a JsonLD representation.
 
-#### ZF\Hal\View\HalJsonStrategy
+#### ZF\JsonLD\View\JsonLDStrategy
 
-`HalJsonStrategy` is responsible for selecting `HalJsonRenderer` when it identifies a `HalJsonModel`
+`JsonLDStrategy` is responsible for selecting `JsonLDRenderer` when it identifies a `JsonLDModel`
 as the controller service response.
+
+Credits
+============
+
+This library was forked from [zfcampus/zf-hal](https://github.com/zfcampus/zf-hal),
+which is awesome library for handling json hal requests in [apigility](https://apigility.org/).
