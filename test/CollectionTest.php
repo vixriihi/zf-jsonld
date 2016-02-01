@@ -4,11 +4,11 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal;
+namespace ZFTest\JsonLD;
 
-use ZF\Hal\Collection;
-use ZF\Hal\Link\Link;
-use ZF\Hal\Link\LinkCollection;
+use ZF\JsonLD\Collection;
+use ZF\JsonLD\Property\Property;
+use ZF\JsonLD\Property\PropertyCollection;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 
@@ -34,103 +34,103 @@ class CollectionTest extends TestCase
      */
     public function testConstructorRaisesExceptionForNonTraversableCollection($collection)
     {
-        $this->setExpectedException('ZF\Hal\Exception\InvalidCollectionException');
-        $hal = new Collection($collection, 'collection/route', 'item/route');
+        $this->setExpectedException('ZF\JsonLD\Exception\InvalidCollectionException');
+        $jsonLD = new Collection($collection, 'collection/route', 'item/route');
     }
 
     public function testPropertiesAreAccessibleFollowingConstruction()
     {
-        $hal = new Collection([], 'item/route', ['version' => 1], ['query' => 'format=json']);
-        $this->assertEquals([], $hal->getCollection());
-        $this->assertEquals('item/route', $hal->getEntityRoute());
-        $this->assertEquals(['version' => 1], $hal->getEntityRouteParams());
-        $this->assertEquals(['query' => 'format=json'], $hal->getEntityRouteOptions());
+        $jsonLD = new Collection([], 'item/route', ['version' => 1], ['query' => 'format=json']);
+        $this->assertEquals([], $jsonLD->getCollection());
+        $this->assertEquals('item/route', $jsonLD->getEntityRoute());
+        $this->assertEquals(['version' => 1], $jsonLD->getEntityRouteParams());
+        $this->assertEquals(['query' => 'format=json'], $jsonLD->getEntityRouteOptions());
     }
 
     public function testDefaultPageIsOne()
     {
-        $hal = new Collection([], 'item/route');
-        $this->assertEquals(1, $hal->getPage());
+        $jsonLD = new Collection([], 'item/route');
+        $this->assertEquals(1, $jsonLD->getPage());
     }
 
     public function testPageIsMutable()
     {
-        $hal = new Collection([], 'item/route');
-        $hal->setPage(5);
-        $this->assertEquals(5, $hal->getPage());
+        $jsonLD = new Collection([], 'item/route');
+        $jsonLD->setPage(5);
+        $this->assertEquals(5, $jsonLD->getPage());
     }
 
     public function testDefaultPageSizeIsThirty()
     {
-        $hal = new Collection([], 'item/route');
-        $this->assertEquals(30, $hal->getPageSize());
+        $jsonLD = new Collection([], 'item/route');
+        $this->assertEquals(30, $jsonLD->getPageSize());
     }
 
     public function testPageSizeIsMutable()
     {
-        $hal = new Collection([], 'item/route');
-        $hal->setPageSize(3);
-        $this->assertEquals(3, $hal->getPageSize());
+        $jsonLD = new Collection([], 'item/route');
+        $jsonLD->setPageSize(3);
+        $this->assertEquals(3, $jsonLD->getPageSize());
     }
 
     public function testPageSizeAllowsNegativeOneAsValue()
     {
-        $hal = new Collection([], 'item/route');
-        $hal->setPageSize(-1);
-        $this->assertEquals(-1, $hal->getPageSize());
+        $jsonLD = new Collection([], 'item/route');
+        $jsonLD->setPageSize(-1);
+        $this->assertEquals(-1, $jsonLD->getPageSize());
     }
 
     public function testDefaultCollectionNameIsItems()
     {
-        $hal = new Collection([], 'item/route');
-        $this->assertEquals('items', $hal->getCollectionName());
+        $jsonLD = new Collection([], 'item/route');
+        $this->assertEquals('member', $jsonLD->getCollectionName());
     }
 
     public function testCollectionNameIsMutable()
     {
-        $hal = new Collection([], 'item/route');
-        $hal->setCollectionName('records');
-        $this->assertEquals('records', $hal->getCollectionName());
+        $jsonLD = new Collection([], 'item/route');
+        $jsonLD->setCollectionName('records');
+        $this->assertEquals('records', $jsonLD->getCollectionName());
     }
 
     public function testDefaultAttributesAreEmpty()
     {
-        $hal = new Collection([], 'item/route');
-        $this->assertEquals([], $hal->getAttributes());
+        $jsonLD = new Collection([], 'item/route');
+        $this->assertEquals([], $jsonLD->getAttributes());
     }
 
     public function testAttributesAreMutable()
     {
-        $hal = new Collection([], 'item/route');
+        $jsonLD = new Collection([], 'item/route');
         $attributes = [
             'count' => 1376,
             'order' => 'desc',
         ];
-        $hal->setAttributes($attributes);
-        $this->assertEquals($attributes, $hal->getAttributes());
+        $jsonLD->setAttributes($attributes);
+        $this->assertEquals($attributes, $jsonLD->getAttributes());
     }
 
-    public function testComposesLinkCollectionByDefault()
+    public function testComposesPropertyCollectionByDefault()
     {
-        $hal = new Collection([], 'item/route');
-        $this->assertInstanceOf('ZF\Hal\Link\LinkCollection', $hal->getLinks());
+        $jsonLD = new Collection([], 'item/route');
+        $this->assertInstanceOf('ZF\JsonLD\Property\PropertyCollection', $jsonLD->getProperties());
     }
 
-    public function testLinkCollectionMayBeInjected()
+    public function testPropertyCollectionMayBeInjected()
     {
-        $hal   = new Collection([], 'item/route');
-        $links = new LinkCollection();
-        $hal->setLinks($links);
-        $this->assertSame($links, $hal->getLinks());
+        $jsonLD   = new Collection([], 'item/route');
+        $properties = new PropertyCollection();
+        $jsonLD->setProperties($properties);
+        $this->assertSame($properties, $jsonLD->getProperties());
     }
 
-    public function testAllowsSettingAdditionalEntityLinks()
+    public function testAllowsSettingAdditionalEntityProperties()
     {
-        $links = new LinkCollection();
-        $links->add(new Link('describedby'));
-        $links->add(new Link('orders'));
-        $hal   = new Collection([], 'item/route');
-        $hal->setEntityLinks($links);
-        $this->assertSame($links, $hal->getEntityLinks());
+        $properties = new PropertyCollection();
+        $properties->add(new Property('describedby'));
+        $properties->add(new Property('orders'));
+        $jsonLD   = new Collection([], 'item/route');
+        $jsonLD->setEntityProperties($properties);
+        $this->assertSame($properties, $jsonLD->getEntityProperties());
     }
 }

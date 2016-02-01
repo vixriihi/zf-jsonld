@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal;
+namespace ZF\JsonLD;
 
 use Zend\Mvc\MvcEvent;
 
@@ -62,7 +62,7 @@ class Module
     public function onRender($e)
     {
         $result = $e->getResult();
-        if (!$result instanceof View\HalJsonModel) {
+        if (!$result instanceof View\JsonLDModel) {
             return;
         }
 
@@ -71,6 +71,6 @@ class Module
 
         // register at high priority, to "beat" normal json strategy registered
         // via view manager
-        $events->attach($services->get('ZF\Hal\JsonStrategy'), 200);
+        $events->attach($services->get('ZF\JsonLD\JsonStrategy'), 200);
     }
 }

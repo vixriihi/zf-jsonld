@@ -4,10 +4,10 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal;
+namespace ZFTest\JsonLD;
 
-use ZF\Hal\Entity;
-use ZF\Hal\Link\LinkCollection;
+use ZF\JsonLD\Entity;
+use ZF\JsonLD\Property\PropertyCollection;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 
@@ -32,44 +32,44 @@ class EntityTest extends TestCase
      */
     public function testConstructorRaisesExceptionForNonObjectNonArrayEntity($entity)
     {
-        $this->setExpectedException('ZF\Hal\Exception\InvalidEntityException');
-        $hal = new Entity($entity, 'id');
+        $this->setExpectedException('ZF\JsonLD\Exception\InvalidEntityException');
+        $jsonLD = new Entity($entity, 'id');
     }
 
     public function testPropertiesAreAccessibleAfterConstruction()
     {
         $entity = new stdClass;
-        $hal    = new Entity($entity, 'id');
-        $this->assertSame($entity, $hal->entity);
-        $this->assertEquals('id', $hal->id);
+        $jsonLD    = new Entity($entity, 'id');
+        $this->assertSame($entity, $jsonLD->entity);
+        $this->assertEquals('id', $jsonLD->id);
     }
 
-    public function testComposesLinkCollectionByDefault()
+    public function testComposesPropertyCollectionByDefault()
     {
         $entity = new stdClass;
-        $hal    = new Entity($entity, 'id', 'route', ['foo' => 'bar']);
-        $this->assertInstanceOf('ZF\Hal\Link\LinkCollection', $hal->getLinks());
+        $jsonLD    = new Entity($entity, 'id', 'route', ['foo' => 'bar']);
+        $this->assertInstanceOf('ZF\JsonLD\Property\PropertyCollection', $jsonLD->getProperties());
     }
 
-    public function testLinkCollectionMayBeInjected()
+    public function testPropertyCollectionMayBeInjected()
     {
         $entity = new stdClass;
-        $hal    = new Entity($entity, 'id', 'route', ['foo' => 'bar']);
-        $links  = new LinkCollection();
-        $hal->setLinks($links);
-        $this->assertSame($links, $hal->getLinks());
+        $jsonLD    = new Entity($entity, 'id', 'route', ['foo' => 'bar']);
+        $properties  = new PropertyCollection();
+        $jsonLD->setProperties($properties);
+        $this->assertSame($properties, $jsonLD->getProperties());
     }
 
     public function testRetrievingEntityCanReturnByReference()
     {
         $entity = ['foo' => 'bar'];
-        $hal    = new Entity($entity, 'id');
-        $this->assertEquals($entity, $hal->entity);
+        $jsonLD    = new Entity($entity, 'id');
+        $this->assertEquals($entity, $jsonLD->entity);
 
-        $entity =& $hal->entity;
+        $entity =& $jsonLD->entity;
         $entity['foo'] = 'baz';
 
-        $secondRetrieval =& $hal->entity;
+        $secondRetrieval =& $jsonLD->entity;
         $this->assertEquals('baz', $secondRetrieval['foo']);
     }
 
@@ -78,7 +78,7 @@ class EntityTest extends TestCase
      */
     public function testConstructorAllowsNullIdentifier()
     {
-        $hal = new Entity(['foo' => 'bar'], null);
-        $this->assertNull($hal->id);
+        $jsonLD = new Entity(['foo' => 'bar'], null);
+        $this->assertNull($jsonLD->id);
     }
 }

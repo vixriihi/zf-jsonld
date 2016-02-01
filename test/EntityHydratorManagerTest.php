@@ -4,14 +4,14 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal\Extractor;
+namespace ZFTest\JsonLD\Extractor;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Hydrator\HydratorPluginManager;
-use ZF\Hal\EntityHydratorManager;
-use ZF\Hal\Metadata\MetadataMap;
-use ZFTest\Hal\Plugin\TestAsset;
-use ZFTest\Hal\Plugin\TestAsset\DummyHydrator;
+use ZF\JsonLD\EntityHydratorManager;
+use ZF\JsonLD\Metadata\MetadataMap;
+use ZFTest\JsonLD\Plugin\TestAsset;
+use ZFTest\JsonLD\Plugin\TestAsset\DummyHydrator;
 
 /**
  * @subpackage UnitTest
@@ -21,7 +21,7 @@ class EntityHydratorManagerTest extends TestCase
     public function testAddHydratorGivenEntityClassAndHydratorInstanceShouldAssociateThem()
     {
         $entity        = new TestAsset\Entity('foo', 'Foo Bar');
-        $hydratorClass = 'ZFTest\Hal\Plugin\TestAsset\DummyHydrator';
+        $hydratorClass = 'ZFTest\JsonLD\Plugin\TestAsset\DummyHydrator';
         $hydrator      = new $hydratorClass();
 
         $metadataMap = new MetadataMap();
@@ -29,7 +29,7 @@ class EntityHydratorManagerTest extends TestCase
         $entityHydratorManager = new EntityHydratorManager($hydratorPluginManager, $metadataMap);
 
         $entityHydratorManager->addHydrator(
-            'ZFTest\Hal\Plugin\TestAsset\Entity',
+            'ZFTest\JsonLD\Plugin\TestAsset\Entity',
             $hydrator
         );
 
@@ -41,14 +41,14 @@ class EntityHydratorManagerTest extends TestCase
     public function testAddHydratorGivenEntityAndHydratorClassesShouldAssociateThem()
     {
         $entity        = new TestAsset\Entity('foo', 'Foo Bar');
-        $hydratorClass = 'ZFTest\Hal\Plugin\TestAsset\DummyHydrator';
+        $hydratorClass = 'ZFTest\JsonLD\Plugin\TestAsset\DummyHydrator';
 
         $metadataMap = new MetadataMap();
         $hydratorPluginManager = new HydratorPluginManager();
         $entityHydratorManager = new EntityHydratorManager($hydratorPluginManager, $metadataMap);
 
         $entityHydratorManager->addHydrator(
-            'ZFTest\Hal\Plugin\TestAsset\Entity',
+            'ZFTest\JsonLD\Plugin\TestAsset\Entity',
             $hydratorClass
         );
 
@@ -64,10 +64,10 @@ class EntityHydratorManagerTest extends TestCase
         $hydratorPluginManager = new HydratorPluginManager();
         $entityHydratorManager = new EntityHydratorManager($hydratorPluginManager, $metadataMap);
 
-        $entityHydratorManager->addHydrator('stdClass', 'ZFTest\Hal\Plugin\TestAsset\DummyHydrator');
+        $entityHydratorManager->addHydrator('stdClass', 'ZFTest\JsonLD\Plugin\TestAsset\DummyHydrator');
 
         $this->assertInstanceOf(
-            'ZFTest\Hal\Plugin\TestAsset\DummyHydrator',
+            'ZFTest\JsonLD\Plugin\TestAsset\DummyHydrator',
             $entityHydratorManager->getHydratorForEntity(new \stdClass)
         );
     }
@@ -75,10 +75,10 @@ class EntityHydratorManagerTest extends TestCase
     public function testGetHydratorForEntityGivenEntityDefinedInMetadataMapShouldReturnDefaultHydrator()
     {
         $entity        = new TestAsset\Entity('foo', 'Foo Bar');
-        $hydratorClass = 'ZFTest\Hal\Plugin\TestAsset\DummyHydrator';
+        $hydratorClass = 'ZFTest\JsonLD\Plugin\TestAsset\DummyHydrator';
 
         $metadataMap = new MetadataMap([
-            'ZFTest\Hal\Plugin\TestAsset\Entity' => [
+            'ZFTest\JsonLD\Plugin\TestAsset\Entity' => [
                 'hydrator' => $hydratorClass,
             ],
         ]);

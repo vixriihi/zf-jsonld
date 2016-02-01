@@ -4,12 +4,12 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal\Factory;
+namespace ZF\JsonLD\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Hydrator\HydratorPluginManager;
-use ZF\Hal\Metadata;
+use ZF\JsonLD\Metadata;
 
 class MetadataMapFactory implements FactoryInterface
 {
@@ -19,7 +19,7 @@ class MetadataMapFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $config = $serviceLocator->get('ZF\Hal\HalConfig');
+        $config = $serviceLocator->get('ZF\JsonLD\JsonLDConfig');
 
         if ($serviceLocator->has('HydratorManager')) {
             $hydrators = $serviceLocator->get('HydratorManager');

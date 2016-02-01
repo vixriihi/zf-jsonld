@@ -4,12 +4,12 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal\Extractor;
+namespace ZF\JsonLD\Extractor;
 
 use JsonSerializable;
 use SplObjectStorage;
 use Zend\Hydrator\ExtractionInterface;
-use ZF\Hal\EntityHydratorManager;
+use ZF\JsonLD\EntityHydratorManager;
 
 class EntityExtractor implements ExtractionInterface
 {
@@ -19,7 +19,7 @@ class EntityExtractor implements ExtractionInterface
     protected $entityHydratorManager;
 
     /**
-     * Map of entities to their ZF\Hal\Entity serializations
+     * Map of entities to their ZF\JsonLD\Entity serializations
      *
      * @var SplObjectStorage
      */

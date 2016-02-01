@@ -4,10 +4,10 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal\Factory;
+namespace ZFTest\JsonLD\Factory;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use ZF\Hal\Factory\MetadataMapFactory;
+use ZF\JsonLD\Factory\MetadataMapFactory;
 
 class MetadataMapFactoryTest extends TestCase
 {
@@ -18,7 +18,7 @@ class MetadataMapFactoryTest extends TestCase
         $services
             ->expects($this->at(0))
             ->method('get')
-            ->with('ZF\Hal\HalConfig')
+            ->with('ZF\JsonLD\JsonLDConfig')
             ->will($this->returnValue([]));
 
         $services
@@ -30,7 +30,7 @@ class MetadataMapFactoryTest extends TestCase
         $factory = new MetadataMapFactory();
         $renderer = $factory->createService($services);
 
-        $this->assertInstanceOf('ZF\Hal\Metadata\MetadataMap', $renderer);
+        $this->assertInstanceOf('ZF\JsonLD\Metadata\MetadataMap', $renderer);
     }
 
     public function testInstantiatesMetadataMapWithMetadataMapConfig()
@@ -39,19 +39,19 @@ class MetadataMapFactoryTest extends TestCase
 
         $config = [
             'metadata_map' => [
-                'ZFTest\Hal\Plugin\TestAsset\Entity' => [
+                'ZFTest\JsonLD\Plugin\TestAsset\Entity' => [
                     'hydrator'   => 'Zend\Hydrator\ObjectProperty',
                     'route_name' => 'hostname/resource',
                     'route_identifier_name' => 'id',
                     'entity_identifier_name' => 'id',
                 ],
-                'ZFTest\Hal\Plugin\TestAsset\EmbeddedEntity' => [
+                'ZFTest\JsonLD\Plugin\TestAsset\EmbeddedEntity' => [
                     'hydrator' => 'Zend\Hydrator\ObjectProperty',
                     'route'    => 'hostname/embedded',
                     'route_identifier_name' => 'id',
                     'entity_identifier_name' => 'id',
                 ],
-                'ZFTest\Hal\Plugin\TestAsset\EmbeddedEntityWithCustomIdentifier' => [
+                'ZFTest\JsonLD\Plugin\TestAsset\EmbeddedEntityWithCustomIdentifier' => [
                     'hydrator'        => 'Zend\Hydrator\ObjectProperty',
                     'route'           => 'hostname/embedded_custom',
                     'route_identifier_name' => 'custom_id',
@@ -63,7 +63,7 @@ class MetadataMapFactoryTest extends TestCase
         $services
             ->expects($this->at(0))
             ->method('get')
-            ->with('ZF\Hal\HalConfig')
+            ->with('ZF\JsonLD\JsonLDConfig')
             ->will($this->returnValue($config));
 
         $services
@@ -75,11 +75,11 @@ class MetadataMapFactoryTest extends TestCase
         $factory = new MetadataMapFactory();
         $metadataMap = $factory->createService($services);
 
-        $this->assertInstanceOf('ZF\Hal\Metadata\MetadataMap', $metadataMap);
+        $this->assertInstanceOf('ZF\JsonLD\Metadata\MetadataMap', $metadataMap);
 
         foreach ($config['metadata_map'] as $key => $value) {
             $this->assertTrue($metadataMap->has($key));
-            $this->assertInstanceOf('ZF\Hal\Metadata\Metadata', $metadataMap->get($key));
+            $this->assertInstanceOf('ZF\JsonLD\Metadata\Metadata', $metadataMap->get($key));
         }
     }
 }

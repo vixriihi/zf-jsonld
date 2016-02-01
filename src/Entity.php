@@ -4,16 +4,16 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal;
+namespace ZF\JsonLD;
 
-class Entity implements Link\LinkCollectionAwareInterface
+class Entity implements Property\PropertyCollectionAwareInterface
 {
     protected $id;
 
     /**
-     * @var Link\LinkCollection
+     * @var Property\PropertyCollection
      */
-    protected $links;
+    protected $properties;
 
     protected $entity;
 
@@ -44,6 +44,7 @@ class Entity implements Link\LinkCollectionAwareInterface
         $names = [
             'entity' => 'entity',
             'id'     => 'id',
+            '@id'    => 'id',
         ];
         $name = strtolower($name);
         if (!in_array($name, array_keys($names))) {
@@ -57,27 +58,27 @@ class Entity implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set link collection
+     * Set property collection
      *
-     * @param  Link\LinkCollection $links
+     * @param  Property\PropertyCollection $properties
      * @return self
      */
-    public function setLinks(Link\LinkCollection $links)
+    public function setProperties(Property\PropertyCollection $properties)
     {
-        $this->links = $links;
+        $this->properties = $properties;
         return $this;
     }
 
     /**
-     * Get link collection
+     * Get property collection
      *
-     * @return Link\LinkCollection
+     * @return Property\PropertyCollection
      */
-    public function getLinks()
+    public function getProperties()
     {
-        if (!$this->links instanceof Link\LinkCollection) {
-            $this->setLinks(new Link\LinkCollection());
+        if (!$this->properties instanceof Property\PropertyCollection) {
+            $this->setProperties(new Property\PropertyCollection());
         }
-        return $this->links;
+        return $this->properties;
     }
 }

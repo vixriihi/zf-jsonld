@@ -4,12 +4,12 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal\Extractor;
+namespace ZFTest\JsonLD\Extractor;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Hydrator\ObjectProperty;
-use ZF\Hal\Extractor\EntityExtractor;
-use ZFTest\Hal\Plugin\TestAsset;
+use ZF\JsonLD\Extractor\EntityExtractor;
+use ZFTest\JsonLD\Plugin\TestAsset;
 
 /**
  * @subpackage UnitTest
@@ -21,7 +21,7 @@ class EntityExtractorTest extends TestCase
         $hydrator = new ObjectProperty();
 
         $entity = new TestAsset\Entity('foo', 'Foo Bar');
-        $entityHydratorManager = $this->getMockBuilder('ZF\Hal\EntityHydratorManager')
+        $entityHydratorManager = $this->getMockBuilder('ZF\JsonLD\EntityHydratorManager')
             ->disableOriginalConstructor()
             ->getMock();
         $entityHydratorManager
@@ -37,7 +37,7 @@ class EntityExtractorTest extends TestCase
     public function testExtractGivenEntityWithoutAssociateHydratorShouldExtractPublicProperties()
     {
         $entity = new TestAsset\Entity('foo', 'Foo Bar');
-        $entityHydratorManager = $this->getMockBuilder('ZF\Hal\EntityHydratorManager')
+        $entityHydratorManager = $this->getMockBuilder('ZF\JsonLD\EntityHydratorManager')
             ->disableOriginalConstructor()
             ->getMock();
         $entityHydratorManager
@@ -56,7 +56,7 @@ class EntityExtractorTest extends TestCase
     public function testExtractTwiceGivenSameEntityShouldProcessExtractionOnceAndReturnSameData()
     {
         $entity = new TestAsset\Entity('foo', 'Foo Bar');
-        $entityHydratorManager = $this->getMockBuilder('ZF\Hal\EntityHydratorManager')
+        $entityHydratorManager = $this->getMockBuilder('ZF\JsonLD\EntityHydratorManager')
             ->disableOriginalConstructor()
             ->getMock();
         $entityHydratorManager

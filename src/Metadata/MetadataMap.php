@@ -4,10 +4,10 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal\Metadata;
+namespace ZF\JsonLD\Metadata;
 
 use Zend\Hydrator\HydratorPluginManager;
-use ZF\Hal\Exception;
+use ZF\JsonLD\Exception;
 
 class MetadataMap
 {
@@ -79,7 +79,7 @@ class MetadataMap
             $metadata = $options;
             if (! is_array($metadata) && ! $metadata instanceof Metadata) {
                 throw new Exception\InvalidArgumentException(sprintf(
-                    '%s expects each map to be an array or a ZF\Hal\Metadata instance; received "%s"',
+                    '%s expects each map to be an array or a ZF\JsonLD\Metadata instance; received "%s"',
                     __METHOD__,
                     (is_object($metadata) ? get_class($metadata) : gettype($metadata))
                 ));
@@ -99,11 +99,7 @@ class MetadataMap
      */
     public function has($class)
     {
-        if (is_object($class)) {
-            $className = get_class($class);
-        } else {
-            $className = $class;
-        }
+        $className = is_object($class) ? get_class($class) : $class;
 
         if (array_key_exists($className, $this->map)) {
             return true;
@@ -126,11 +122,7 @@ class MetadataMap
      */
     public function get($class)
     {
-        if (is_object($class)) {
-            $className = get_class($class);
-        } else {
-            $className = $class;
-        }
+        $className = is_object($class) ? get_class($class) : $class;
 
         if (isset($this->map[$className])) {
             return $this->getMetadataInstance($className);

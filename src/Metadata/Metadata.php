@@ -4,11 +4,11 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal\Metadata;
+namespace ZF\JsonLD\Metadata;
 
 use Zend\Hydrator\ExtractionInterface;
 use Zend\Hydrator\HydratorPluginManager;
-use ZF\Hal\Exception;
+use ZF\JsonLD\Exception;
 use Zend\Filter\FilterChain;
 
 class Metadata
@@ -68,36 +68,36 @@ class Metadata
     protected $isCollection = false;
 
     /**
-     * Collection of additional relational links to inject in entity
+     * Collection of additional relational properties to inject in entity
      *
      * @var array
      */
-    protected $links = [];
+    protected $properties = [];
 
     /**
-     * Whether to force the existance of a "self" link. The HAl specification encourages it but it is not strictly
+     * Whether to force the existance of a "@id" property. The JsonLD specification encourages it but it is not strictly
      * required.
      *
      * @var bool
      */
-    protected $forceSelfLink = true;
+    protected $forceIDProperty = true;
 
     /**
-     * Route to use to generate a self link for this entity
+     * Route to use to generate a id property for this entity
      *
      * @var string
      */
     protected $route;
 
     /**
-     * Additional options to use when generating a self link for this entity
+     * Additional options to use when generating a id property for this entity
      *
      * @var array
      */
     protected $routeOptions = [];
 
     /**
-     * Additional route parameters to use when generating a self link for this entity
+     * Additional route parameters to use when generating a id property for this entity
      *
      * @var array
      */
@@ -250,13 +250,13 @@ class Metadata
     }
 
     /**
-     * Retrieve set of relational links to inject, if any
+     * Retrieve set of relational properties to inject, if any
      *
      * @return array
      */
-    public function getLinks()
+    public function getProperties()
     {
-        return $this->links;
+        return $this->properties;
     }
 
     /**
@@ -276,23 +276,6 @@ class Metadata
             }
         }
         return $this->entityRoute;
-    }
-
-    /**
-     * Retrieve the resource route
-     *
-     * Deprecated; please use getEntityRoute()
-     *
-     * @deprecated
-     * @return null|string
-     */
-    public function getResourceRoute()
-    {
-        trigger_error(sprintf(
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->getEntityRoute();
     }
 
     /**
@@ -469,23 +452,23 @@ class Metadata
     }
 
     /**
-     * Set relational links.
+     * Set relational properties.
      *
      * Each element in the array should be an array with the elements:
      *
-     * - rel - the link relation
-     * - url - the URL to use for the link OR
-     * - route - an array of route information for generating the link; this
+     * - rel - the property relation
+     * - url - the URL to use for the property OR
+     * - route - an array of route information for generating the property; this
      *   should include the elements "name" (required; the route name),
      *   "params" (optional; additional parameters to inject), and "options"
      *   (optional; additional options to pass to the router for assembly)
      *
-     * @param  array $links
+     * @param  array $properties
      * @return self
      */
-    public function setLinks(array $links)
+    public function setProperties(array $properties)
     {
-        $this->links = $links;
+        $this->properties = $properties;
         return $this;
     }
 
@@ -499,25 +482,6 @@ class Metadata
     {
         $this->entityRoute = $route;
         return $this;
-    }
-
-    /**
-     * Set the entity route (for embedded entities in collections)
-     *
-     * Deprecated; please use setEntityRoute().
-     *
-     * @deprecated
-     * @param  string $route
-     * @return self
-     */
-    public function setResourceRoute($route)
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::setEntityRoute',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->setEntityRoute($route);
     }
 
     /**
@@ -581,24 +545,24 @@ class Metadata
     }
 
     /**
-     * Returns true if this entity should be forced to have a "self" link.
+     * Returns true if this entity should be forced to have a "@id" property.
      *
      * @return boolean
      */
-    public function getForceSelfLink()
+    public function getForceIDProperty()
     {
-        return $this->forceSelfLink;
+        return $this->forceIDProperty;
     }
 
     /**
-     * Set whether to force the existance of "self" links.
+     * Set whether to force the existance of "@id" properties.
      *
-     * @param boolean $forceSelfLink A truthy value
+     * @param boolean $forceIDProperty A truthy value
      * @return $this
      */
-    public function setForceSelfLink($forceSelfLink)
+    public function setForceIDProperty($forceIDProperty)
     {
-        $this->forceSelfLink = $forceSelfLink;
+        $this->forceIDProperty = $forceIDProperty;
         return $this;
     }
 }

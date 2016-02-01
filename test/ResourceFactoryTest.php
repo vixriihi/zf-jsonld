@@ -4,15 +4,15 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal;
+namespace ZFTest\JsonLD;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Hydrator\HydratorPluginManager;
-use ZF\Hal\EntityHydratorManager;
-use ZF\Hal\Extractor\EntityExtractor;
-use ZF\Hal\Metadata\MetadataMap;
-use ZF\Hal\ResourceFactory;
-use ZFTest\Hal\Plugin\TestAsset;
+use ZF\JsonLD\EntityHydratorManager;
+use ZF\JsonLD\Extractor\EntityExtractor;
+use ZF\JsonLD\Metadata\MetadataMap;
+use ZF\JsonLD\ResourceFactory;
+use ZFTest\JsonLD\Plugin\TestAsset;
 
 /**
  * @subpackage UnitTest
@@ -22,21 +22,21 @@ class ResourceFactoryTest extends TestCase
     /**
      * @group 79
      */
-    public function testInjectsLinksFromMetadataWhenCreatingEntity()
+    public function testInjectsPropertiesFromMetadataWhenCreatingEntity()
     {
         $object = new TestAsset\Entity('foo', 'Foo');
 
         $metadata = new MetadataMap([
-            'ZFTest\Hal\Plugin\TestAsset\Entity' => [
+            'ZFTest\JsonLD\Plugin\TestAsset\Entity' => [
                 'hydrator'   => 'Zend\Hydrator\ObjectProperty',
                 'route_name' => 'hostname/resource',
-                'links'      => [
+                'properties'      => [
                     [
-                        'rel' => 'describedby',
+                        'key' => 'describedby',
                         'url' => 'http://example.com/api/help/resource',
                     ],
                     [
-                        'rel' => 'children',
+                        'key' => 'children',
                         'route' => [
                             'name' => 'resource/children',
                         ],
@@ -49,31 +49,31 @@ class ResourceFactoryTest extends TestCase
 
         $entity = $resourceFactory->createEntityFromMetadata(
             $object,
-            $metadata->get('ZFTest\Hal\Plugin\TestAsset\Entity')
+            $metadata->get('ZFTest\JsonLD\Plugin\TestAsset\Entity')
         );
 
-        $this->assertInstanceof('ZF\Hal\Entity', $entity);
-        $links = $entity->getLinks();
-        $this->assertTrue($links->has('describedby'));
-        $this->assertTrue($links->has('children'));
+        $this->assertInstanceof('ZF\JsonLD\Entity', $entity);
+        $properties = $entity->getProperties();
+        $this->assertTrue($properties->has('describedby'));
+        $this->assertTrue($properties->has('children'));
 
-        $describedby = $links->get('describedby');
+        $describedby = $properties->get('describedby');
         $this->assertTrue($describedby->hasUrl());
         $this->assertEquals('http://example.com/api/help/resource', $describedby->getUrl());
 
-        $children = $links->get('children');
+        $children = $properties->get('children');
         $this->assertTrue($children->hasRoute());
         $this->assertEquals('resource/children', $children->getRoute());
     }
 
     /**
-     * Test that the hal metadata route params config allows callables.
+     * Test that the jsonLD metadata route params config allows callables.
      *
      * All callables should be passed the object being used for entity creation.
      * If closure binding is supported, any closures should be bound to that
      * object.
      *
-     * The return value should be used as the route param for the link (in
+     * The return value should be used as the route param for the property (in
      * place of the callable).
      */
     public function testRouteParamsAllowsCallable()
@@ -89,7 +89,7 @@ class ResourceFactoryTest extends TestCase
         $test = $this;
 
         $metadata = new MetadataMap([
-            'ZFTest\Hal\Plugin\TestAsset\Entity' => [
+            'ZFTest\JsonLD\Plugin\TestAsset\Entity' => [
                 'hydrator'     => 'Zend\Hydrator\ObjectProperty',
                 'route_name'   => 'hostname/resource',
                 'route_params' => [
@@ -110,16 +110,16 @@ class ResourceFactoryTest extends TestCase
 
         $entity = $resourceFactory->createEntityFromMetadata(
             $object,
-            $metadata->get('ZFTest\Hal\Plugin\TestAsset\Entity')
+            $metadata->get('ZFTest\JsonLD\Plugin\TestAsset\Entity')
         );
 
-        $this->assertInstanceof('ZF\Hal\Entity', $entity);
+        $this->assertInstanceof('ZF\JsonLD\Entity', $entity);
 
-        $links = $entity->getLinks();
-        $this->assertTrue($links->has('self'));
+        $properties = $entity->getProperties();
+        $this->assertTrue($properties->has('@id'));
 
-        $self = $links->get('self');
-        $params = $self->getRouteParams();
+        $idProperty = $properties->get('@id');
+        $params = $idProperty->getRouteParams();
 
         $this->assertArrayHasKey('test-1', $params);
         $this->assertEquals('callback-param', $params['test-1']);
@@ -131,7 +131,7 @@ class ResourceFactoryTest extends TestCase
     /**
      * @group 79
      */
-    public function testInjectsLinksFromMetadataWhenCreatingCollection()
+    public function testInjectsPropertiesFromMetadataWhenCreatingCollection()
     {
         $set = new TestAsset\Collection([
             (object) ['id' => 'foo', 'name' => 'foo'],
@@ -140,13 +140,13 @@ class ResourceFactoryTest extends TestCase
         ]);
 
         $metadata = new MetadataMap([
-            'ZFTest\Hal\Plugin\TestAsset\Collection' => [
+            'ZFTest\JsonLD\Plugin\TestAsset\Collection' => [
                 'is_collection'       => true,
                 'route_name'          => 'hostname/contacts',
                 'entity_route_name'   => 'hostname/embedded',
-                'links'               => [
+                'properties'               => [
                     [
-                        'rel' => 'describedby',
+                        'key' => 'describedby',
                         'url' => 'http://example.com/api/help/collection',
                     ],
                 ],
@@ -157,15 +157,15 @@ class ResourceFactoryTest extends TestCase
 
         $collection = $resourceFactory->createCollectionFromMetadata(
             $set,
-            $metadata->get('ZFTest\Hal\Plugin\TestAsset\Collection')
+            $metadata->get('ZFTest\JsonLD\Plugin\TestAsset\Collection')
         );
 
-        $this->assertInstanceof('ZF\Hal\Collection', $collection);
-        $links = $collection->getLinks();
-        $this->assertTrue($links->has('describedby'));
-        $link = $links->get('describedby');
-        $this->assertTrue($link->hasUrl());
-        $this->assertEquals('http://example.com/api/help/collection', $link->getUrl());
+        $this->assertInstanceof('ZF\JsonLD\Collection', $collection);
+        $properties = $collection->getProperties();
+        $this->assertTrue($properties->has('describedby'));
+        $property = $properties->get('describedby');
+        $this->assertTrue($property->hasUrl());
+        $this->assertEquals('http://example.com/api/help/collection', $property->getUrl());
     }
 
     private function getResourceFactory(MetadataMap $metadata)

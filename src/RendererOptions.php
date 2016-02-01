@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal;
+namespace ZF\JsonLD;
 
 use Zend\Stdlib\AbstractOptions;
 
@@ -18,12 +18,12 @@ class RendererOptions extends AbstractOptions
     /**
      * @var bool
      */
-    protected $renderEmbeddedEntities = true;
+    protected $renderMemberEntities = true;
 
     /**
      * @var bool
      */
-    protected $renderEmbeddedCollections = true;
+    protected $renderMemberCollections = true;
 
     /**
      * @var array
@@ -49,33 +49,33 @@ class RendererOptions extends AbstractOptions
     /**
      * @param bool $flag
      */
-    public function setRenderEmbeddedEntities($flag)
+    public function setRenderMemberEntities($flag)
     {
-        $this->renderEmbeddedEntities = (bool) $flag;
+        $this->renderMemberEntities = (bool) $flag;
     }
 
     /**
      * @return string
      */
-    public function getRenderEmbeddedEntities()
+    public function getRenderMemberEntities()
     {
-        return $this->renderEmbeddedEntities;
+        return $this->renderMemberEntities;
     }
 
     /**
      * @param bool $flag
      */
-    public function setRenderEmbeddedCollections($flag)
+    public function setRenderMemberCollections($flag)
     {
-        $this->renderEmbeddedCollections = (bool) $flag;
+        $this->renderMemberCollections = (bool) $flag;
     }
 
     /**
      * @return string
      */
-    public function getRenderEmbeddedCollections()
+    public function getRenderMemberCollections()
     {
-        return $this->renderEmbeddedCollections;
+        return $this->renderMemberCollections;
     }
 
     /**

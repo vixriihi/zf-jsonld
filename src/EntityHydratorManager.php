@@ -4,11 +4,11 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal;
+namespace ZF\JsonLD;
 
 use Zend\Hydrator\ExtractionInterface;
 use Zend\Hydrator\HydratorPluginManager;
-use ZF\Hal\Metadata\MetadataMap;
+use ZF\JsonLD\Metadata\MetadataMap;
 
 class EntityHydratorManager
 {

@@ -5,7 +5,7 @@
  */
 
 return [
-    'zf-hal' => [
+    'zf-jsonld' => [
         'renderer' => [
             // 'default_hydrator' => 'Hydrator Service Name',
             // 'hydrators'        => [
@@ -18,12 +18,13 @@ return [
             //     'entity_identifier_name' => 'identifying field name, if a resource',
             //     'route_name'      => 'name of route for this resource',
             //     'is_collection'   => 'boolean; set to true for collections',
-            //     'links'           => [
+            //     'properties'      => [
             //         [
-            //             'rel'   => 'link relation',
+            //             'key'   => 'property keyword',
+            //             'value' => 'mixed value', // OR
             //             'url'   => 'string absolute URI to use', // OR
             //             'route' => [
-            //                 'name'    => 'route name for this link',
+            //                 'name'    => 'route name for this property',
             //                 'params'  => [ /* any route params to use for link generation */ ],
             //                 'options' => [ /* any options to pass to the router */ ],
             //             ],
@@ -42,11 +43,11 @@ return [
             'use_proxy' => false,
         ],
     ],
-    // Creates a "HalJson" selector for zfcampus/zf-content-negotiation
+    // Creates a "JsonLD" selector for zfcampus/zf-content-negotiation
     'zf-content-negotiation' => [
         'selectors' => [
-            'HalJson' => [
-                'ZF\Hal\View\HalJsonModel' => [
+            'JsonLD' => [
+                'ZF\JsonLD\View\JsonLDModel' => [
                     'application/json',
                     'application/*+json',
                 ],
@@ -55,21 +56,21 @@ return [
     ],
     'service_manager' => [
         'factories' => [
-            'ZF\Hal\HalConfig'       => 'ZF\Hal\Factory\HalConfigFactory',
-            'ZF\Hal\JsonRenderer'    => 'ZF\Hal\Factory\HalJsonRendererFactory',
-            'ZF\Hal\JsonStrategy'    => 'ZF\Hal\Factory\HalJsonStrategyFactory',
-            'ZF\Hal\MetadataMap'     => 'ZF\Hal\Factory\MetadataMapFactory',
-            'ZF\Hal\RendererOptions' => 'ZF\Hal\Factory\RendererOptionsFactory',
+            'ZF\JsonLD\JsonLDConfig'    => 'ZF\JsonLD\Factory\JsonLDConfigFactory',
+            'ZF\JsonLD\JsonLDRenderer'  => 'ZF\JsonLD\Factory\JsonLDRendererFactory',
+            'ZF\JsonLD\JsonLDStrategy'  => 'ZF\JsonLD\Factory\JsonLDStrategyFactory',
+            'ZF\JsonLD\MetadataMap'     => 'ZF\JsonLD\Factory\MetadataMapFactory',
+            'ZF\JsonLD\RendererOptions' => 'ZF\JsonLD\Factory\RendererOptionsFactory',
         ],
     ],
     'view_helpers' => [
         'factories' => [
-            'Hal' => 'ZF\Hal\Factory\HalViewHelperFactory',
+            'JsonLD' => 'ZF\JsonLD\Factory\JsonLDViewHelperFactory',
         ],
     ],
     'controller_plugins' => [
         'factories' => [
-            'Hal' => 'ZF\Hal\Factory\HalControllerPluginFactory',
+            'JsonLD' => 'ZF\JsonLD\Factory\JsonLDControllerPluginFactory',
         ],
     ],
 ];

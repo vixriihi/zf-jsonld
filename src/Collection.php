@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal;
+namespace ZF\JsonLD;
 
 use Traversable;
 use Zend\Stdlib\ArrayUtils;
@@ -12,7 +12,7 @@ use Zend\Stdlib\ArrayUtils;
 /**
  * Model a collection for use with HAL payloads
  */
-class Collection implements Link\LinkCollectionAwareInterface
+class Collection implements Property\PropertyCollectionAwareInterface
 {
     /**
      * Additional attributes to render with the collection
@@ -27,11 +27,11 @@ class Collection implements Link\LinkCollectionAwareInterface
     protected $collection;
 
     /**
-     * Name of collection (used to identify it in the "_embedded" object)
+     * Name of collection (used as property in the object)
      *
      * @var string
      */
-    protected $collectionName = 'items';
+    protected $collectionName = 'member';
 
     /**
      * @var string
@@ -53,7 +53,7 @@ class Collection implements Link\LinkCollectionAwareInterface
      *
      * @var string
      */
-    protected $entityIdentifierName = 'id';
+    protected $entityIdentifierName = '@id';
 
     /**
      * Name of the route parameter identifier for individual entities of the collection
@@ -63,9 +63,9 @@ class Collection implements Link\LinkCollectionAwareInterface
     protected $routeIdentifierName = 'id';
 
     /**
-     * @var Link\LinkCollection
+     * @var Property\PropertyCollection
      */
-    protected $links;
+    protected $properties;
 
     /**
      * Current page
@@ -82,9 +82,9 @@ class Collection implements Link\LinkCollectionAwareInterface
     protected $pageSize = 30;
 
     /**
-     * @var Link\LinkCollection
+     * @var Property\PropertyCollection
      */
-    protected $entityLinks;
+    protected $entityProperties;
 
     /**
      * @var string
@@ -132,18 +132,6 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Proxy to properties to allow read access
-     *
-     * @param  string $name
-     * @return mixed
-     * @throws \Exception
-     */
-    public function __get($name)
-    {
-        throw new \Exception('Direct query of values is deprecated.  Use getters.');
-    }
-
-    /**
      * Set additional attributes to render as part of the collection
      *
      * @param  array $attributes
@@ -156,7 +144,7 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set the collection name (for use within the _embedded object)
+     * Set the collection name (for use within the member object)
      *
      * @param  string $name
      * @return self
@@ -168,7 +156,7 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set the collection route; used for generating pagination links
+     * Set the collection route; used for generating pagination properties
      *
      * @param  string $route
      * @return self
@@ -180,7 +168,7 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set options to use with the collection route; used for generating pagination links
+     * Set options to use with the collection route; used for generating pagination properties
      *
      * @param  array|Traversable $options
      * @return self
@@ -203,7 +191,7 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set parameters/substitutions to use with the collection route; used for generating pagination links
+     * Set parameters/substitutions to use with the collection route; used for generating pagination properties
      *
      * @param  array|Traversable $params
      * @return self
@@ -250,14 +238,14 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set link collection
+     * Set property collection
      *
-     * @param  Link\LinkCollection $links
+     * @param  Property\PropertyCollection $properties
      * @return self
      */
-    public function setLinks(Link\LinkCollection $links)
+    public function setProperties(Property\PropertyCollection $properties)
     {
-        $this->links = $links;
+        $this->properties = $properties;
         return $this;
     }
 
@@ -318,34 +306,15 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set default set of links to use for entities
+     * Set default set of properties to use for entities
      *
-     * @param  Link\LinkCollection $links
+     * @param  Property\PropertyCollection $properties
      * @return self
      */
-    public function setEntityLinks(Link\LinkCollection $links)
+    public function setEntityProperties(Property\PropertyCollection $properties)
     {
-        $this->entityLinks = $links;
+        $this->entityProperties = $properties;
         return $this;
-    }
-
-    /**
-     * Set default set of links to use for entities
-     *
-     * Deprecated; please use setEntityLinks().
-     *
-     * @deprecated
-     * @param  Link\LinkCollection $links
-     * @return self
-     */
-    public function setResourceLinks(Link\LinkCollection $links)
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::setEntityLinks',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->setEntityLinks($links);
     }
 
     /**
@@ -358,25 +327,6 @@ class Collection implements Link\LinkCollectionAwareInterface
     {
         $this->entityRoute = (string) $route;
         return $this;
-    }
-
-    /**
-     * Set the entity route
-     *
-     * Deprecated; please use setEntityRoute().
-     *
-     * @deprecated
-     * @param  string $route
-     * @return self
-     */
-    public function setResourceRoute($route)
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::setEntityRoute',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->setEntityRoute($route);
     }
 
     /**
@@ -403,26 +353,6 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set options to use with the entity route
-     *
-     * Deprecated; please use setEntityRouteOptions().
-     *
-     * @deprecated
-     * @param  array|Traversable $options
-     * @return self
-     * @throws Exception\InvalidArgumentException
-     */
-    public function setResourceRouteOptions($options)
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::setEntityRouteOptions',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->setEntityRouteOptions($options);
-    }
-
-    /**
      * Set parameters/substitutions to use with the entity route
      *
      * @param  array|Traversable $params
@@ -446,64 +376,26 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Set parameters/substitutions to use with the entity route
+     * Get property collection
      *
-     * Deprecated; please use setEntityRouteParams().
-     *
-     * @deprecated
-     * @param  array|Traversable $params
-     * @return self
-     * @throws Exception\InvalidArgumentException
+     * @return Property\PropertyCollection
      */
-    public function setResourceRouteParams($params)
+    public function getProperties()
     {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::setEntityRouteParams',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->setEntityRouteParams($params);
-    }
-
-    /**
-     * Get link collection
-     *
-     * @return Link\LinkCollection
-     */
-    public function getLinks()
-    {
-        if (!$this->links instanceof Link\LinkCollection) {
-            $this->setLinks(new Link\LinkCollection());
+        if (!$this->properties instanceof Property\PropertyCollection) {
+            $this->setProperties(new Property\PropertyCollection());
         }
-        return $this->links;
+        return $this->properties;
     }
 
     /**
-     * Retrieve default entity links, if any
+     * Retrieve default entity properties, if any
      *
-     * @return null|Link\LinkCollection
+     * @return null|Property\PropertyCollection
      */
-    public function getEntityLinks()
+    public function getEntityProperties()
     {
-        return $this->entityLinks;
-    }
-
-    /**
-     * Retrieve default entity links, if any
-     *
-     * Deprecated; please use getEntityLinks().
-     *
-     * @deprecated
-     * @return null|Link\LinkCollection
-     */
-    public function getResourceLinks()
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::getEntityLinks',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->getEntityLinks();
+        return $this->entityProperties;
     }
 
     /**
@@ -597,24 +489,6 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Entity Route
-     *
-     * Deprecated; please use getEntityRoute().
-     *
-     * @deprecated
-     * @return string
-     */
-    public function getResourceRoute()
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::getEntityRoute',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->getEntityRoute();
-    }
-
-    /**
      * Entity Route Options
      *
      * @return array
@@ -625,24 +499,6 @@ class Collection implements Link\LinkCollectionAwareInterface
     }
 
     /**
-     * Entity Route Options
-     *
-     * Deprecated; please use getEntityRouteOptions().
-     *
-     * @deprecated
-     * @return array
-     */
-    public function getResourceRouteOptions()
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::getEntityRouteOptions',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->getEntityRouteOptions();
-    }
-
-    /**
      * Entity Route Params
      *
      * @return array
@@ -650,24 +506,6 @@ class Collection implements Link\LinkCollectionAwareInterface
     public function getEntityRouteParams()
     {
         return $this->entityRouteParams;
-    }
-
-    /**
-     * Entity Route Params
-     *
-     * Deprecated; please use getEntityRouteParams().
-     *
-     * @deprecated
-     * @return array
-     */
-    public function getResourceRouteParams()
-    {
-        trigger_error(sprintf(
-            '%s is deprecated; please use %s::getEntityRouteParams',
-            __METHOD__,
-            __CLASS__
-        ), E_USER_DEPRECATED);
-        return $this->getEntityRouteParams();
     }
 
     /**

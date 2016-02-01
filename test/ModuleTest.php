@@ -4,12 +4,12 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal;
+namespace ZFTest\JsonLD;
 
 use Zend\ServiceManager\ServiceManager;
 use Zend\View\View;
-use ZF\Hal\Module;
-use ZF\Hal\View\HalJsonModel;
+use ZF\JsonLD\Module;
+use ZF\JsonLD\View\JsonLDModel;
 use PHPUnit_Framework_TestCase as TestCase;
 use stdClass;
 
@@ -36,7 +36,7 @@ class ModuleTest extends TestCase
 
     public function testOnRenderAttachesJsonStrategy()
     {
-        $halJsonStrategy = $this->getMockBuilder('ZF\Hal\View\HalJsonStrategy')
+        $jsonLDJsonStrategy = $this->getMockBuilder('ZF\JsonLD\View\HalJsonStrategy')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -46,13 +46,13 @@ class ModuleTest extends TestCase
         $eventManager
             ->expects($this->once())
             ->method('attach')
-            ->with($halJsonStrategy, 200);
+            ->with($jsonLDJsonStrategy, 200);
 
         $view->setEventManager($eventManager);
 
         $serviceManager = new ServiceManager();
         $serviceManager
-            ->setService('ZF\Hal\JsonStrategy', $halJsonStrategy)
+            ->setService('ZF\JsonLD\JsonStrategy', $jsonLDJsonStrategy)
             ->setService('View', $view);
 
         $application = $this->getMock('Zend\Mvc\ApplicationInterface');
@@ -65,7 +65,7 @@ class ModuleTest extends TestCase
         $mvcEvent
             ->expects($this->at(0))
             ->method('getResult')
-            ->will($this->returnValue(new HalJsonModel()));
+            ->will($this->returnValue(new JsonLDModel()));
         $mvcEvent
             ->expects($this->at(1))
             ->method('getTarget')

@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal\TestAsset;
+namespace ZFTest\JsonLD\TestAsset;
 
 use Zend\Stdlib\JsonSerializable as JsonSerializableInterface;
 

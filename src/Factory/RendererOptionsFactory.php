@@ -4,11 +4,11 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal\Factory;
+namespace ZF\JsonLD\Factory;
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use ZF\Hal\RendererOptions;
+use ZF\JsonLD\RendererOptions;
 
 class RendererOptionsFactory implements FactoryInterface
 {
@@ -18,17 +18,11 @@ class RendererOptionsFactory implements FactoryInterface
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $config = $serviceLocator->get('ZF\Hal\HalConfig');
+        $config = $serviceLocator->get('ZF\JsonLD\JsonLDConfig');
 
         $rendererConfig = [];
         if (isset($config['renderer']) && is_array($config['renderer'])) {
             $rendererConfig = $config['renderer'];
-        }
-
-        if (isset($rendererConfig['render_embedded_resources'])
-            && !isset($rendererConfig['render_embedded_entities'])
-        ) {
-            $rendererConfig['render_embedded_entities'] = $rendererConfig['render_embedded_resources'];
         }
 
         return new RendererOptions($rendererConfig);

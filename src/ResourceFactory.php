@@ -4,16 +4,16 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZF\Hal;
+namespace ZF\JsonLD;
 
 use Closure;
-use ZF\Hal\Collection;
-use ZF\Hal\Entity;
-use ZF\Hal\Extractor\EntityExtractor;
-use ZF\Hal\Exception;
-use ZF\Hal\Link\Link;
-use ZF\Hal\Link\LinkCollection;
-use ZF\Hal\Metadata\Metadata;
+use ZF\JsonLD\Collection;
+use ZF\JsonLD\Entity;
+use ZF\JsonLD\Extractor\EntityExtractor;
+use ZF\JsonLD\Exception;
+use ZF\JsonLD\Property\Property;
+use ZF\JsonLD\Property\PropertyCollection;
+use ZF\JsonLD\Metadata\Metadata;
 
 class ResourceFactory
 {
@@ -69,23 +69,23 @@ class ResourceFactory
             $object = [];
         }
 
-        $halEntity = new Entity($object, $id);
+        $jsonLDEntity = new Entity($object, $id);
 
-        $links = $halEntity->getLinks();
-        $this->marshalMetadataLinks($metadata, $links);
+        $properties = $jsonLDEntity->getProperties();
+        $this->marshalMetadataProperties($metadata, $properties);
 
-        $forceSelfLink = $metadata->getForceSelfLink();
-        if ($forceSelfLink && ! $links->has('self')) {
-            $link = $this->marshalLinkFromMetadata(
+        $forceIDProperty = $metadata->getForceIDProperty();
+        if ($forceIDProperty && ! $properties->has('@id')) {
+            $property = $this->marshalPropertyFromMetadata(
                 $metadata,
                 $object,
                 $id,
                 $metadata->getRouteIdentifierName()
             );
-            $links->add($link);
+            $properties->add($property);
         }
 
-        return $halEntity;
+        return $jsonLDEntity;
     }
 
     /**
@@ -95,54 +95,54 @@ class ResourceFactory
      */
     public function createCollectionFromMetadata($object, Metadata $metadata)
     {
-        $halCollection = new Collection($object);
-        $halCollection->setCollectionName($metadata->getCollectionName());
-        $halCollection->setCollectionRoute($metadata->getRoute());
-        $halCollection->setEntityRoute($metadata->getEntityRoute());
-        $halCollection->setRouteIdentifierName($metadata->getRouteIdentifierName());
-        $halCollection->setEntityIdentifierName($metadata->getEntityIdentifierName());
+        $jsonLDCollection = new Collection($object);
+        $jsonLDCollection->setCollectionName($metadata->getCollectionName());
+        $jsonLDCollection->setCollectionRoute($metadata->getRoute());
+        $jsonLDCollection->setEntityRoute($metadata->getEntityRoute());
+        $jsonLDCollection->setRouteIdentifierName($metadata->getRouteIdentifierName());
+        $jsonLDCollection->setEntityIdentifierName($metadata->getEntityIdentifierName());
 
-        $links = $halCollection->getLinks();
-        $this->marshalMetadataLinks($metadata, $links);
+        $properties = $jsonLDCollection->getProperties();
+        $this->marshalMetadataProperties($metadata, $properties);
 
-        $forceSelfLink = $metadata->getForceSelfLink();
-        if ($forceSelfLink && ! $links->has('self')
+        $forceIDProperty = $metadata->getForceIDProperty();
+        if ($forceIDProperty && ! $properties->has('@id')
             && ($metadata->hasUrl() || $metadata->hasRoute())
         ) {
-            $link = $this->marshalLinkFromMetadata($metadata, $object);
-            $links->add($link);
+            $property = $this->marshalPropertyFromMetadata($metadata, $object);
+            $properties->add($property);
         }
 
-        return $halCollection;
+        return $jsonLDCollection;
     }
 
     /**
-     * Creates a link object, given metadata and a resource
+     * Creates a property object, given metadata and a resource
      *
      * @param  Metadata $metadata
      * @param  object $object
      * @param  null|string $id
      * @param  null|string $routeIdentifierName
      * @param  string $relation
-     * @return Link
+     * @return Property
      * @throws Exception\RuntimeException
      */
-    public function marshalLinkFromMetadata(
+    public function marshalPropertyFromMetadata(
         Metadata $metadata,
         $object,
         $id = null,
         $routeIdentifierName = null,
-        $relation = 'self'
+        $relation = '@id'
     ) {
-        $link = new Link($relation);
+        $property = new Property($relation);
         if ($metadata->hasUrl()) {
-            $link->setUrl($metadata->getUrl());
-            return $link;
+            $property->setUrl($metadata->getUrl());
+            return $property;
         }
 
         if (! $metadata->hasRoute()) {
             throw new Exception\RuntimeException(sprintf(
-                'Unable to create a self link for resource of type "%s"; metadata does not contain a route or a url',
+                'Unable to create a self property for resource of type "%s"; metadata does not contain a route or a url',
                 get_class($object)
             ));
         }
@@ -168,21 +168,21 @@ class ResourceFactory
             $params = array_merge($params, [$routeIdentifierName => $id]);
         }
 
-        $link->setRoute($metadata->getRoute(), $params, $metadata->getRouteOptions());
-        return $link;
+        $property->setRoute($metadata->getRoute(), $params, $metadata->getRouteOptions());
+        return $property;
     }
 
     /**
-     * Inject any links found in the metadata into the resource's link collection
+     * Inject any properties found in the metadata into the resource's property collection
      *
      * @param  Metadata $metadata
-     * @param  LinkCollection $links
+     * @param  PropertyCollection $properties
      */
-    public function marshalMetadataLinks(Metadata $metadata, LinkCollection $links)
+    public function marshalMetadataProperties(Metadata $metadata, PropertyCollection $properties)
     {
-        foreach ($metadata->getLinks() as $linkData) {
-            $link = Link::factory($linkData);
-            $links->add($link);
+        foreach ($metadata->getProperties() as $propertyData) {
+            $property = Property::factory($propertyData);
+            $properties->add($property);
         }
     }
 }

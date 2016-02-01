@@ -4,7 +4,7 @@
  * @copyright Copyright (c) 2014 Zend Technologies USA Inc. (http://www.zend.com)
  */
 
-namespace ZFTest\Hal;
+namespace ZFTest\JsonLD;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Http\Request;
@@ -14,14 +14,14 @@ use Zend\View\HelperPluginManager;
 use Zend\View\Helper\ServerUrl as ServerUrlHelper;
 use Zend\View\Helper\Url as UrlHelper;
 use ZF\ApiProblem\View\ApiProblemRenderer;
-use ZF\Hal\Collection;
-use ZF\Hal\Entity;
-use ZF\Hal\Extractor\LinkCollectionExtractor;
-use ZF\Hal\Extractor\LinkExtractor;
-use ZF\Hal\Link\Link;
-use ZF\Hal\Plugin\Hal as HalHelper;
-use ZF\Hal\View\HalJsonModel;
-use ZF\Hal\View\HalJsonRenderer;
+use ZF\JsonLD\Collection;
+use ZF\JsonLD\Entity;
+use ZF\JsonLD\Extractor\PropertyCollectionExtractor;
+use ZF\JsonLD\Extractor\PropertyExtractor;
+use ZF\JsonLD\Property\Property;
+use ZF\JsonLD\Plugin\JsonLD as JsonLDHelper;
+use ZF\JsonLD\View\JsonLDModel;
+use ZF\JsonLD\View\JsonLDRenderer;
 
 /**
  * @subpackage UnitTest
@@ -48,21 +48,21 @@ class ChildEntitiesIntegrationTest extends TestCase
         $serverUrlHelper->setScheme('http');
         $serverUrlHelper->setHost('localhost.localdomain');
 
-        $linksHelper = new HalHelper();
-        $linksHelper->setUrlHelper($urlHelper);
-        $linksHelper->setServerUrlHelper($serverUrlHelper);
+        $propertiesHelper = new JsonLDHelper();
+        $propertiesHelper->setUrlHelper($urlHelper);
+        $propertiesHelper->setServerUrlHelper($serverUrlHelper);
 
-        $linkExtractor = new LinkExtractor($serverUrlHelper, $urlHelper);
-        $linkCollectionExtractor = new LinkCollectionExtractor($linkExtractor);
-        $linksHelper->setLinkCollectionExtractor($linkCollectionExtractor);
+        $propertyExtractor = new PropertyExtractor($serverUrlHelper, $urlHelper);
+        $propertyCollectionExtractor = new PropertyCollectionExtractor($propertyExtractor);
+        $propertiesHelper->setPropertyCollectionExtractor($propertyCollectionExtractor);
 
         $this->helpers = $helpers = new HelperPluginManager();
         $helpers->setService('url', $urlHelper);
         $helpers->setService('serverUrl', $serverUrlHelper);
-        $helpers->setService('hal', $linksHelper);
+        $helpers->setService('JsonLD', $propertiesHelper);
 
         $this->plugins = $plugins = new ControllerPluginManager();
-        $plugins->setService('hal', $linksHelper);
+        $plugins->setService('JsonLD', $propertiesHelper);
     }
 
     public function setupRenderer()
@@ -70,7 +70,7 @@ class ChildEntitiesIntegrationTest extends TestCase
         if (!$this->helpers) {
             $this->setupHelpers();
         }
-        $this->renderer = $renderer = new HalJsonRenderer(new ApiProblemRenderer());
+        $this->renderer = $renderer = new JsonLDRenderer(new ApiProblemRenderer());
         $renderer->setHelperPluginManager($this->helpers);
     }
 
@@ -106,15 +106,15 @@ class ChildEntitiesIntegrationTest extends TestCase
     public function setUpParentEntity()
     {
         $this->parent = (object) [
-            'id'   => 'anakin',
+            '@id'  => 'anakin',
             'name' => 'Anakin Skywalker',
         ];
         $entity = new Entity($this->parent, 'anakin');
 
-        $link = new Link('self');
-        $link->setRoute('parent');
-        $link->setRouteParams(['parent'=> 'anakin']);
-        $entity->getLinks()->add($link);
+        $property = new Property('some');
+        $property->setRoute('parent');
+        $property->setRouteParams(['parent'=> 'anakin']);
+        $entity->getProperties()->add($property);
 
         return $entity;
     }
@@ -122,15 +122,15 @@ class ChildEntitiesIntegrationTest extends TestCase
     public function setUpChildEntity($id, $name)
     {
         $this->child = (object) [
-            'id'   => $id,
+            '@id'   => $id,
             'name' => $name,
         ];
         $entity = new Entity($this->child, $id);
 
-        $link = new Link('self');
-        $link->setRoute('parent/child');
-        $link->setRouteParams(['child'=> $id]);
-        $entity->getLinks()->add($link);
+        $property = new Property('some');
+        $property->setRoute('parent/child');
+        $property->setRouteParams(['child'=> $id]);
+        $entity->getProperties()->add($property);
 
         return $entity;
     }
@@ -141,20 +141,20 @@ class ChildEntitiesIntegrationTest extends TestCase
             ['luke', 'Luke Skywalker'],
             ['leia', 'Leia Organa'],
         ];
-        $this->collection = [];
+        $collection = [];
         foreach ($children as $info) {
             $collection[] = call_user_func_array([$this, 'setUpChildEntity'], $info);
         }
-        $collection = new Collection($this->collection);
+        $collection = new Collection($collection);
         $collection->setCollectionRoute('parent/child');
         $collection->setEntityRoute('parent/child');
         $collection->setPage(1);
         $collection->setPageSize(10);
         $collection->setCollectionName('child');
 
-        $link = new Link('self');
-        $link->setRoute('parent/child');
-        $collection->getLinks()->add($link);
+        $property = new Property('@id');
+        $property->setRoute('parent/child');
+        $collection->getProperties()->add($property);
 
         return $collection;
     }
@@ -173,15 +173,14 @@ class ChildEntitiesIntegrationTest extends TestCase
         $this->helpers->get('url')->setRouteMatch($matches);
 
         $parent = $this->setUpParentEntity();
-        $model  = new HalJsonModel();
+        $model  = new JsonLDModel();
         $model->setPayload($parent);
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('_links', $test);
-        $this->assertObjectHasAttribute('self', $test->_links);
-        $this->assertObjectHasAttribute('href', $test->_links->self);
-        $this->assertEquals('http://localhost.localdomain/api/parent/anakin', $test->_links->self->href);
+        $this->assertObjectHasAttribute('@id', $test);
+        $this->assertObjectHasAttribute('some', $test);
+        $this->assertEquals('http://localhost.localdomain/api/parent/anakin', $test->some);
     }
 
     public function testChildEntityRendersAsExpected()
@@ -199,15 +198,13 @@ class ChildEntitiesIntegrationTest extends TestCase
         $this->helpers->get('url')->setRouteMatch($matches);
 
         $child = $this->setUpChildEntity('luke', 'Luke Skywalker');
-        $model = new HalJsonModel();
+        $model = new JsonLDModel();
         $model->setPayload($child);
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('_links', $test);
-        $this->assertObjectHasAttribute('self', $test->_links);
-        $this->assertObjectHasAttribute('href', $test->_links->self);
-        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child/luke', $test->_links->self->href);
+        $this->assertObjectHasAttribute('some', $test);
+        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child/luke', $test->some);
     }
 
     public function testChildCollectionRendersAsExpected()
@@ -225,27 +222,23 @@ class ChildEntitiesIntegrationTest extends TestCase
         $this->helpers->get('url')->setRouteMatch($matches);
 
         $collection = $this->setUpChildCollection();
-        $model = new HalJsonModel();
+        $model = new JsonLDModel();
         $model->setPayload($collection);
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('_links', $test);
-        $this->assertObjectHasAttribute('self', $test->_links);
-        $this->assertObjectHasAttribute('href', $test->_links->self);
-        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->_links->self->href);
+        $this->assertObjectHasAttribute('@id', $test);
+        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->{'@id'});
 
-        $this->assertObjectHasAttribute('_embedded', $test);
-        $this->assertObjectHasAttribute('child', $test->_embedded);
-        $this->assertInternalType('array', $test->_embedded->child);
+        $this->assertObjectHasAttribute('child', $test);
+        $this->assertInternalType('array', $test->child);
 
-        foreach ($test->_embedded->child as $child) {
-            $this->assertObjectHasAttribute('_links', $child);
-            $this->assertObjectHasAttribute('self', $child->_links);
-            $this->assertObjectHasAttribute('href', $child->_links->self);
-            $this->assertRegex(
+        foreach ($test->child as $child) {
+            $this->assertObjectHasAttribute('@id', $child);
+            $this->assertObjectHasAttribute('some', $child);
+            $this->assertRegexp(
                 '#^http://localhost.localdomain/api/parent/anakin/child/[^/]+$#',
-                $child->_links->self->href
+                $child->some
             );
         }
     }
@@ -266,7 +259,7 @@ class ChildEntitiesIntegrationTest extends TestCase
                     'child' => [
                         'type' => 'Segment',
                         'options' => [
-                            'route' => '/child[/:child_id]',
+                            'route' => '/child[/:child]',
                             'defaults' => [
                                 'controller' => 'Api\ChildController',
                             ],
@@ -290,22 +283,21 @@ class ChildEntitiesIntegrationTest extends TestCase
         $matches = $this->router->match($request);
         $this->assertInstanceOf('Zend\Mvc\Router\RouteMatch', $matches);
         $this->assertEquals('anakin', $matches->getParam('id'));
-        $this->assertEquals('luke', $matches->getParam('child_id'));
+        $this->assertEquals('luke', $matches->getParam('child'));
         $this->assertEquals('parent/child', $matches->getMatchedRouteName());
 
         // Emulate url helper factory and inject route matches
         $this->helpers->get('url')->setRouteMatch($matches);
 
         $child = $this->setUpChildEntity('luke', 'Luke Skywalker');
-        $model = new HalJsonModel();
+        $model = new JsonLDModel();
         $model->setPayload($child);
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('_links', $test);
-        $this->assertObjectHasAttribute('self', $test->_links);
-        $this->assertObjectHasAttribute('href', $test->_links->self);
-        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child/luke', $test->_links->self->href);
+        $this->assertObjectHasAttribute('@id', $test);
+        $this->assertObjectHasAttribute('some', $test);
+        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child/luke', $test->some);
     }
 
     public function testChildEntityIdentifierMappingInsideCollection()
@@ -318,34 +310,30 @@ class ChildEntitiesIntegrationTest extends TestCase
         $matches = $this->router->match($request);
         $this->assertInstanceOf('Zend\Mvc\Router\RouteMatch', $matches);
         $this->assertEquals('anakin', $matches->getParam('id'));
-        $this->assertNull($matches->getParam('child_id'));
+        $this->assertNull($matches->getParam('child'));
         $this->assertEquals('parent/child', $matches->getMatchedRouteName());
 
         // Emulate url helper factory and inject route matches
         $this->helpers->get('url')->setRouteMatch($matches);
 
         $collection = $this->setUpChildCollection();
-        $model = new HalJsonModel();
+        $model = new JsonLDModel();
         $model->setPayload($collection);
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('_links', $test);
-        $this->assertObjectHasAttribute('self', $test->_links);
-        $this->assertObjectHasAttribute('href', $test->_links->self);
-        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->_links->self->href);
+        $this->assertObjectHasAttribute('@id', $test);
+        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->{'@id'});
 
-        $this->assertObjectHasAttribute('_embedded', $test);
-        $this->assertObjectHasAttribute('child', $test->_embedded);
-        $this->assertInternalType('array', $test->_embedded->child);
+        $this->assertObjectHasAttribute('child', $test);
+        $this->assertInternalType('array', $test->child);
 
-        foreach ($test->_embedded->child as $child) {
-            $this->assertObjectHasAttribute('_links', $child);
-            $this->assertObjectHasAttribute('self', $child->_links);
-            $this->assertObjectHasAttribute('href', $child->_links->self);
-            $this->assertRegex(
+        foreach ($test->child as $child) {
+            $this->assertObjectHasAttribute('@id', $child);
+            $this->assertObjectHasAttribute('some', $child);
+            $this->assertRegexp(
                 '#^http://localhost.localdomain/api/parent/anakin/child/[^/]+$#',
-                $child->_links->self->href
+                $child->some
             );
         }
     }
