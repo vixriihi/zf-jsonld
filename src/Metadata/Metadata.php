@@ -25,7 +25,7 @@ class Metadata
      *
      * @var string
      */
-    protected $collectionName = 'items';
+    protected $collectionName = 'member';
 
     /**
      * Hydrator to use when extracting object of this class

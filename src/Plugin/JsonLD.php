@@ -520,17 +520,16 @@ class JsonLD extends AbstractHelper implements
         }
 
         if ($collection instanceof Paginator) {
-            $payload['view']['@type'] = 'PartialCollectionView';
+            if (!empty($payload['view'])) {
+                $payload['view']['@type'] = 'PartialCollectionView';
+                $payload['view']['itemsPerPage'] = isset($payload['itemsPerPage'])
+                    ? $payload['itemsPerPage']
+                    : $jsonLDCollection->getPageSize();
+            }
 
-            $payload['view']['itemsPerPage'] = isset($payload['itemsPerPage'])
-                ? $payload['itemsPerPage']
-                : $jsonLDCollection->getPageSize();
             $payload['totalItems'] = isset($payload['totalItems'])
                 ? $payload['totalItems']
                 : (int) $collection->getTotalItemCount();
-            $payload['page'] = ($collection->count() > 0)
-                ? $jsonLDCollection->getPage()
-                : 0;
         } elseif (is_array($collection) || $collection instanceof Countable) {
             $payload['totalItems'] = isset($payload['totalItems'])
                 ? $payload['totalItems']

@@ -57,8 +57,8 @@ return [
     'service_manager' => [
         'factories' => [
             'ZF\JsonLD\JsonLDConfig'    => 'ZF\JsonLD\Factory\JsonLDConfigFactory',
-            'ZF\JsonLD\JsonLDRenderer'  => 'ZF\JsonLD\Factory\JsonLDRendererFactory',
-            'ZF\JsonLD\JsonLDStrategy'  => 'ZF\JsonLD\Factory\JsonLDStrategyFactory',
+            'ZF\JsonLD\JsonRenderer'    => 'ZF\JsonLD\Factory\JsonLDRendererFactory',
+            'ZF\JsonLD\JsonStrategy'    => 'ZF\JsonLD\Factory\JsonLDStrategyFactory',
             'ZF\JsonLD\MetadataMap'     => 'ZF\JsonLD\Factory\MetadataMapFactory',
             'ZF\JsonLD\RendererOptions' => 'ZF\JsonLD\Factory\RendererOptionsFactory',
         ],
