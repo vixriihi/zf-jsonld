@@ -28,7 +28,7 @@ Alternately, manually add the following to your `composer.json`, in the `require
 
 ```javascript
 "require": {
-    "zfcampus/zf-jsonld": "@dev-master"
+    "luomus/zf-jsonld": "@dev-master"
 }
 ```
 
@@ -138,6 +138,19 @@ a ZF2-based application.
                 'application/*+json',
             ),
         ),
+    ),
+),
+```
+
+You'll need to use custom rest controller for this wo work. 
+
+```php
+// Creates a "JsonLD" selector for use with zfcampus/zf-content-negotiation
+'zf-rest' => array(
+    '<controller>' => array(
+        /* ... */
+        'controller' => 'ZF\JsonLD\RestController',
+        /* ... */
     ),
 ),
 ```
