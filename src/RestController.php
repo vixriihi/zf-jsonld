@@ -7,7 +7,7 @@ use Zend\Http\Response;
 use Zend\Mvc\MvcEvent;
 use ZF\ApiProblem\ApiProblem;
 use ZF\ApiProblem\ApiProblemResponse;
-use Zf\Rest\RestController as HalRestController;
+use ZF\Rest\RestController as HalRestController;
 use ZF\ApiProblem\Exception\DomainException;
 use ZF\JsonLD\Entity as JsonLDEntity;
 use ZF\JsonLD\Collection as JsonLDCollection;
@@ -246,6 +246,28 @@ class RestController extends HalRestController
         }
 
         return $this->prepareHalCollection($collection);
+    }
+
+
+    /**
+     * @param  mixed $entity
+     * @return JsonLDEntity
+     */
+    protected function createHalEntity($entity)
+    {
+        if ($entity instanceof JsonLDEntity &&
+            ($entity->getProperties()->has('@id') || ! $entity->id)
+        ) {
+            return $entity;
+        }
+
+        $plugin = $this->plugin('JsonLD');
+
+        return $plugin->createEntity(
+            $entity,
+            $this->route,
+            $this->getRouteIdentifierName()
+        );
     }
 
 }

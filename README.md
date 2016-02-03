@@ -149,7 +149,7 @@ You'll need to use custom rest controller for this wo work.
 'zf-rest' => array(
     '<controller>' => array(
         /* ... */
-        'controller' => 'ZF\JsonLD\RestController',
+        'controller_class' => 'ZF\JsonLD\RestController',
         /* ... */
     ),
 ),
