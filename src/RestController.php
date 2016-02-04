@@ -108,7 +108,7 @@ class RestController extends HalRestController
         }
 
         if ($value instanceof JsonLDCollection) {
-            $jsonLDCollection = $this->prepareHalCollection($value);
+            $jsonLDCollection = $this->prepareJsonLDCollection($value);
 
             $events->trigger('create.post', $this, [
                 'data'       => $data,
@@ -151,7 +151,7 @@ class RestController extends HalRestController
      * @param JsonLDCollection $collection
      * @return JsonLDCollection|ApiProblem
      */
-    protected function prepareHalCollection(JsonLDCollection $collection)
+    protected function prepareJsonLDCollection(JsonLDCollection $collection)
     {
         if (! $collection->getProperties()->has('@id')) {
             $plugin = $this->plugin('JsonLD');
@@ -250,7 +250,7 @@ class RestController extends HalRestController
             $collection = $jsonLDPlugin->createCollection($collection, $this->route);
         }
 
-        return $this->prepareHalCollection($collection);
+        return $this->prepareJsonLDCollection($collection);
     }
 
 
