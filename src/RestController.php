@@ -89,7 +89,6 @@ class RestController extends HalRestController
     /**
      * Create a new entity
      *
-     * @todo   Remove 'resource' from the create.post event parameters for 1.0.0
      * @param  array $data
      * @return Response|ApiProblem|ApiProblemResponse|JsonLDEntity
      */
@@ -126,11 +125,11 @@ class RestController extends HalRestController
         if ($jsonLDEntity->getProperties()->has('@id')) {
             $plugin = $this->plugin('JsonLD');
             $idLink = $jsonLDEntity->getProperties()->get('@id');
-            $selfLinkUrl = $plugin->fromLink($idLink);
+            $idLinkUrl = $plugin->fromProperty($idLink);
 
             $response = $this->getResponse();
             $response->setStatusCode(201);
-            $response->getHeaders()->addHeaderLine('Location', $selfLinkUrl);
+            $response->getHeaders()->addHeaderLine('Location', $idLinkUrl);
         }
 
         $events->trigger('create.post', $this, [
@@ -143,7 +142,11 @@ class RestController extends HalRestController
     }
 
     /**
-     * Prepare a JsonLD collection with the metadata for the current instance.
+     * Unlike name suggests this prepare a JsonLD collection
+     * with the metadata for the current instance.
+     *
+     * Chanign the name would meen that would have to override almost every method in this class
+     *
      *
      * @param JsonLDCollection $collection
      * @return JsonLDCollection|ApiProblem
@@ -235,6 +238,8 @@ class RestController extends HalRestController
 
 
     /**
+     * Unlike name suggests this created JsonLDCollection
+     *
      * @param  mixed $collection
      * @return JsonLDCollection
      */
@@ -250,6 +255,8 @@ class RestController extends HalRestController
 
 
     /**
+     * Unlike name suggests this creates JsonLD entity
+     *
      * @param  mixed $entity
      * @return JsonLDEntity
      */
