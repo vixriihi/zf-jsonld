@@ -184,8 +184,6 @@ class JsonLD extends AbstractHelper implements
             if (is_array($entity)) {
                 if (array_key_exists('id', $entity)) {
                     return $entity['id'];
-                } else if (array_key_exists('@id', $entity)) {
-                    return $entity['@id'];
                 }
             }
 
@@ -643,14 +641,7 @@ class JsonLD extends AbstractHelper implements
             unset($this->entityHashStack[$entityHash]);
         }
 
-        $data = $payload->getArrayCopy();
-        if (isset($data['id']) && isset($data['@id'])) {
-            if (substr($data['id'],0,4) === 'http') {
-                $data['@id'] = $data['id'];
-            }
-            unset($data['id']);
-        }
-        return $data;
+        return $payload->getArrayCopy();
     }
 
     /**
@@ -822,7 +813,7 @@ class JsonLD extends AbstractHelper implements
     }
 
     /**
-     * Inject a "@id"  based on the route and identifier
+     * Inject a "id"  based on the route and identifier
      *
      * @param  PropertyCollectionAwareInterface $resource
      * @param  string $route
@@ -831,11 +822,11 @@ class JsonLD extends AbstractHelper implements
     public function injectIDProperty(PropertyCollectionAwareInterface $resource, $route, $routeIdentifier = 'id')
     {
         $properties = $resource->getProperties();
-        if ($properties->has('@id')) {
+        if ($properties->has('id')) {
             return;
         }
 
-        $id = new Property('@id');
+        $id = new Property('id');
         $id->setRoute($route);
 
         $routeParams  = [];
@@ -993,8 +984,8 @@ class JsonLD extends AbstractHelper implements
                 $properties = $entity['properties'];
             }
 
-            if (!isset($entity['@id'])) {
-                $idProperty = new Property('@id');
+            if (!isset($entity['id'])) {
+                $idProperty = new Property('id');
                 $idProperty->setRoute(
                     $eventParams['route'],
                     array_merge($eventParams['routeParams'], [$routeIdentifierName => $id]),

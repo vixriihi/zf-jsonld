@@ -172,15 +172,15 @@ class JsonLDTest extends TestCase
     {
         $collection = new Collection(
             [
-                (object) ['@id' => 'http://foo.bar/foo', 'name' => 'foo'],
-                (object) ['@id' => 'http://foo.bar/bar', 'name' => 'bar'],
-                (object) ['@id' => 'http://foo.bar/baz', 'name' => 'baz'],
+                (object) ['id' => 'http://foo.bar/foo', 'name' => 'foo'],
+                (object) ['id' => 'http://foo.bar/bar', 'name' => 'bar'],
+                (object) ['id' => 'http://foo.bar/baz', 'name' => 'baz'],
             ],
             'hostname/contacts'
         );
         $entity = new Entity(
             (object) [
-                '@id'       => 'http://foo.bar/123',
+                'id'       => 'http://foo.bar/123',
                 'contacts' => $collection,
             ],
             'user'
@@ -198,7 +198,7 @@ class JsonLDTest extends TestCase
         $this->assertEquals(3, count($contacts));
         foreach ($contacts as $contact) {
             $this->assertInternalType('array', $contact);
-            $this->assertRelationalPropertyContains('http://foo.bar', '@id', $contact);
+            $this->assertRelationalPropertyContains('http://foo.bar', 'id', $contact);
         }
     }
 
@@ -208,7 +208,7 @@ class JsonLDTest extends TestCase
         $object->first_child  = new TestAsset\EmbeddedEntity('bar', 'Bar');
         $object->second_child = new TestAsset\EmbeddedEntityWithCustomIdentifier('baz', 'Baz');
         $entity = new Entity($object, 'foo');
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/resource', ['id' => 'foo']);
         $entity->getProperties()->add($self);
 
@@ -236,18 +236,18 @@ class JsonLDTest extends TestCase
         $this->plugin->setMetadataMap($metadata);
 
         $rendered = $this->plugin->renderEntity($entity);
-        $this->assertRelationalPropertyContains('/resource/foo', '@id', $rendered);
+        $this->assertRelationalPropertyContains('/resource/foo', 'id', $rendered);
 
         $this->assertArrayHasKey('first_child', $rendered);
         $this->assertArrayHasKey('second_child', $rendered);
 
         $first = $rendered['first_child'];
         $this->assertInternalType('array', $first);
-        $this->assertRelationalPropertyContains('/embedded/bar', '@id', $first);
+        $this->assertRelationalPropertyContains('/embedded/bar', 'id', $first);
 
         $second = $rendered['second_child'];
         $this->assertInternalType('array', $second);
-        $this->assertRelationalPropertyContains('/embedded_custom/baz', '@id', $second);
+        $this->assertRelationalPropertyContains('/embedded_custom/baz', 'id', $second);
     }
 
     public function testMetadataMapLooksForParentClasses()
@@ -256,7 +256,7 @@ class JsonLDTest extends TestCase
         $object->first_child  = new TestAsset\EmbeddedProxyEntity('bar', 'Bar');
         $object->second_child = new TestAsset\EmbeddedProxyEntityWithCustomIdentifier('baz', 'Baz');
         $entity = new Entity($object, 'foo');
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/resource', ['id' => 'foo']);
         $entity->getProperties()->add($self);
 
@@ -284,18 +284,18 @@ class JsonLDTest extends TestCase
         $this->plugin->setMetadataMap($metadata);
 
         $rendered = $this->plugin->renderEntity($entity);
-        $this->assertRelationalPropertyContains('/resource/foo', '@id', $rendered);
+        $this->assertRelationalPropertyContains('/resource/foo', 'id', $rendered);
 
         $this->assertArrayHasKey('first_child', $rendered);
         $this->assertArrayHasKey('second_child', $rendered);
 
         $first = $rendered['first_child'];
         $this->assertInternalType('array', $first);
-        $this->assertRelationalPropertyContains('/embedded/bar', '@id', $first);
+        $this->assertRelationalPropertyContains('/embedded/bar', 'id', $first);
 
         $second = $rendered['second_child'];
         $this->assertInternalType('array', $second);
-        $this->assertRelationalPropertyContains('/embedded_custom/baz', '@id', $second);
+        $this->assertRelationalPropertyContains('/embedded_custom/baz', 'id', $second);
     }
 
     public function testRendersJsonSerializableObjectUsingJsonserializeMethod()
@@ -353,7 +353,7 @@ class JsonLDTest extends TestCase
         foreach ($contacts as $contact) {
             $this->assertInternalType('array', $contact);
             $this->assertArrayHasKey('id', $contact);
-            $this->assertRelationalPropertyContains('/embedded/' . $contact['id'], '@id', $contact);
+            $this->assertRelationalPropertyContains($contact['id'], 'id', $contact);
         }
     }
 
@@ -386,14 +386,14 @@ class JsonLDTest extends TestCase
         $this->plugin->setMetadataMap($metadata);
 
         $collection = new Collection([$entity], 'hostname/resource');
-        $idProperty = new Property('@id');
+        $idProperty = new Property('id');
         $idProperty->setRoute('hostname/resource');
         $collection->getProperties()->add($idProperty);
         $collection->setCollectionName('resources');
 
         $rendered = $this->plugin->renderCollection($collection);
 
-        $this->assertRelationalPropertyContains('/resource', '@id', $rendered);
+        $this->assertRelationalPropertyContains('/resource', 'id', $rendered);
 
         $this->assertArrayHasKey('resources', $rendered);
         $member = $rendered['resources'];
@@ -409,7 +409,7 @@ class JsonLDTest extends TestCase
         foreach ($resource['first_child'] as $contact) {
             $this->assertInternalType('array', $contact);
             $this->assertArrayHasKey('id', $contact);
-            $this->assertRelationalPropertyContains('/embedded/' . $contact['id'], '@id', $contact);
+            $this->assertRelationalPropertyContains($contact['id'], 'id', $contact);
         }
     }
 
@@ -446,14 +446,14 @@ class JsonLDTest extends TestCase
         $this->plugin->setRenderEmbeddedEntities(false);
 
         $collection = new Collection([$entity], 'hostname/resource');
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/resource');
         $collection->getProperties()->add($self);
         $collection->setCollectionName('resources');
 
         $rendered = $this->plugin->renderCollection($collection);
 
-        $this->assertRelationalPropertyContains('/resource', '@id', $rendered);
+        $this->assertRelationalPropertyContains('/resource', 'id', $rendered);
 
         $this->assertArrayHasKey('resources', $rendered);
         $embed = $rendered['resources'];
@@ -466,12 +466,10 @@ class JsonLDTest extends TestCase
         $this->assertArrayHasKey('second_child', $resource);
 
         $this->assertInternalType('array', $resource['first_child']);
-        $this->assertArrayNotHasKey('id', $resource['first_child']);
-        $this->assertArrayHasKey('@id', $resource['first_child']);
+        $this->assertArrayHasKey('id', $resource['first_child']);
 
         $this->assertInternalType('array', $resource['second_child']);
-        $this->assertArrayNotHasKey('id', $resource['second_child']);
-        $this->assertArrayHasKey('@id', $resource['second_child']);
+        $this->assertArrayHasKey('id', $resource['second_child']);
 
     }
     // @codingStandardsIgnoreEnd
@@ -484,17 +482,17 @@ class JsonLDTest extends TestCase
         ], 1);
         $properties = $entity->getProperties();
 
-        $this->assertFalse($properties->has('@id'));
+        $this->assertFalse($properties->has('id'));
 
         $this->plugin->injectIDProperty($entity, 'hostname/resource');
 
-        $this->assertTrue($properties->has('@id'));
-        $property = $properties->get('@id');
+        $this->assertTrue($properties->has('id'));
+        $property = $properties->get('id');
         $this->assertInstanceof('ZF\JsonLD\Property\Property', $property);
 
         $this->plugin->injectIDProperty($entity, 'hostname/resource');
-        $this->assertTrue($properties->has('@id'));
-        $property = $properties->get('@id');
+        $this->assertTrue($properties->has('id'));
+        $property = $properties->get('id');
         $this->assertInstanceof('ZF\JsonLD\Property\Property', $property);
     }
 
@@ -578,21 +576,21 @@ class JsonLDTest extends TestCase
     public function testRenderingEmbeddedEntityEmbedsEntity()
     {
         $embedded = new Entity((object) ['id' => 'foo', 'name' => 'foo'], 'foo');
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/contacts', ['id' => 'foo']);
         $embedded->getProperties()->add($self);
 
         $entity = new Entity((object) ['id' => 'user', 'contact' => $embedded], 'user');
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/users', ['id' => 'user']);
         $entity->getProperties()->add($self);
 
         $rendered = $this->plugin->renderEntity($entity);
 
-        $this->assertRelationalPropertyContains('/users/user', '@id', $rendered);
+        $this->assertRelationalPropertyContains('/users/user', 'id', $rendered);
         $this->assertArrayHasKey('contact', $rendered);
         $this->assertInternalType('array', $rendered['contact']);
-        $this->assertRelationalPropertyContains('/contacts/foo', '@id', $rendered['contact']);
+        $this->assertRelationalPropertyContains('/contacts/foo', 'id', $rendered['contact']);
     }
 
     /**
@@ -602,7 +600,7 @@ class JsonLDTest extends TestCase
     {
         $embedded = new Entity((object) ['id' => 'foo', 'name' => 'foo'], 'foo');
         $properties = $embedded->getProperties();
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/users', ['id' => 'foo']);
         $properties->add($self);
         $phones = new Property('phones');
@@ -611,13 +609,13 @@ class JsonLDTest extends TestCase
 
         $collection = new Collection([$embedded]);
         $collection->setCollectionName('users');
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/users');
         $collection->getProperties()->add($self);
 
         $rendered = $this->plugin->renderCollection($collection);
 
-        $this->assertRelationalPropertyContains('/users', '@id', $rendered);
+        $this->assertRelationalPropertyContains('/users', 'id', $rendered);
         $this->assertArrayHasKey('users', $rendered);
         $this->assertInternalType('array', $rendered['users']);
 
@@ -625,7 +623,7 @@ class JsonLDTest extends TestCase
         $this->assertInternalType('array', $users);
         $user = array_shift($users);
 
-        $this->assertRelationalPropertyContains('/users/foo', '@id', $user);
+        $this->assertRelationalPropertyContains('/users/foo', 'id', $user);
         $this->assertRelationalPropertyContains('/users/foo/phones', 'phones', $user);
     }
 
@@ -715,17 +713,17 @@ class JsonLDTest extends TestCase
             ],
             'user'
         );
-        $idProperty = new Property('@id');
+        $idProperty = new Property('id');
         $idProperty->setRoute('hostname/users', ['id' => 'user']);
         $entity->getProperties()->add($idProperty);
 
         $this->plugin->getEventManager()->attach('renderEntity', function ($e) {
             $entity = $e->getParam('entity');
-            $entity->getProperties()->get('@id')->setRouteParams(['id' => 'matthew']);
+            $entity->getProperties()->get('id')->setRouteParams(['id' => 'matthew']);
         });
 
         $rendered = $this->plugin->renderEntity($entity);
-        $this->assertContains('/users/matthew', $rendered['@id']);
+        $this->assertContains('/users/matthew', $rendered['id']);
     }
 
     /**
@@ -832,7 +830,7 @@ class JsonLDTest extends TestCase
         ]);
         $result = $this->plugin->createCollection($collection);
         $properties  = $result->getProperties();
-        $idProperty = $properties->get('@id');
+        $idProperty = $properties->get('id');
         $this->assertEquals([
             'query' => [
                 'version' => 2,
@@ -872,14 +870,14 @@ class JsonLDTest extends TestCase
         $jsonLDCollection = $this->plugin->createCollection($collection);
         $rendered = $this->plugin->renderCollection($jsonLDCollection);
 
-        $this->assertRelationalPropertyContains('/contacts', '@id', $rendered);
+        $this->assertRelationalPropertyContains('/contacts', 'id', $rendered);
         $this->assertArrayHasKey('collection', $rendered);
         $this->assertInternalType('array', $rendered['collection']);
 
         $renderedCollection = $rendered['collection'];
 
         foreach ($renderedCollection as $entity) {
-            $this->assertRelationalPropertyContains('/resource/', '@id', $entity);
+            $this->assertRelationalPropertyContains('/resource/', 'id', $entity);
         }
     }
 
@@ -907,16 +905,15 @@ class JsonLDTest extends TestCase
 
         $rendered = $this->plugin->renderCollection($collection);
         $expected = [
-            '@id',
+            'id',
             'view',
             'users',
             'totalItems',
-            'page',
             '@context',
             '@type',
         ];
         $expectedView = [
-            '@id',
+            'id',
             'firstPage',
             'lastPage',
             'previousPage',
@@ -928,7 +925,7 @@ class JsonLDTest extends TestCase
         $this->assertArrayHasKey('view', $rendered);
         $this->assertEquals($expectedView, array_keys($rendered['view']));
         $this->assertEquals(100, $rendered['totalItems']);
-        $this->assertEquals(3,  filter_var($rendered['view']['@id'], FILTER_SANITIZE_NUMBER_INT));
+        $this->assertEquals(3,  filter_var($rendered['view']['id'], FILTER_SANITIZE_NUMBER_INT));
         $this->assertEquals(10, filter_var($rendered['view']['lastPage'], FILTER_SANITIZE_NUMBER_INT));
         $this->assertEquals(10, $rendered['view']['itemsPerPage']);
         $this->assertNotContains('page=1', $rendered['view']['firstPage']);
@@ -947,13 +944,13 @@ class JsonLDTest extends TestCase
 
         $collection = new Collection([$embedded]);
         $collection->setCollectionName('users');
-        $self = new Property('@id');
+        $self = new Property('id');
         $self->setRoute('hostname/users');
         $collection->getProperties()->add($self);
 
         $rendered = $this->plugin->renderCollection($collection);
 
-        $expectedKeys = ['@id', 'users', 'totalItems', '@context', '@type'];
+        $expectedKeys = ['id', 'users', 'totalItems', '@context', '@type'];
         $this->assertEquals($expectedKeys, array_keys($rendered));
     }
 
@@ -991,8 +988,8 @@ class JsonLDTest extends TestCase
         $this->assertNull($jsonLD->id);
 
         $properties = $jsonLD->getProperties();
-        $this->assertTrue($properties->has('@id'));
-        $property = $properties->get('@id');
+        $this->assertTrue($properties->has('id'));
+        $property = $properties->get('id');
         $params = $property->getRouteParams();
         $this->assertEquals([], $params);
     }
@@ -1046,11 +1043,11 @@ class JsonLDTest extends TestCase
                     'second_child' => null,
                     'first_child' => [
                         'parent' => [
-                            '@id' => 'http://localhost.localdomain/resource/foo',
+                            'id' => 'http://localhost.localdomain/resource/foo',
                         ],
-                        '@id' => 'http://localhost.localdomain/embedded/bar',
+                        'id' => 'http://localhost.localdomain/embedded/bar',
                     ],
-                    '@id' => 'http://localhost.localdomain/resource/foo',
+                    'id' => 'http://localhost.localdomain/resource/foo',
                 ]
             ],
             [
@@ -1064,13 +1061,13 @@ class JsonLDTest extends TestCase
                             'name' => 'Foo',
                             'second_child' => null,
                             'first_child' => [
-                                '@id' => 'http://localhost.localdomain/embedded/bar',
+                                'id' => 'http://localhost.localdomain/embedded/bar',
                             ],
-                            '@id' => 'http://localhost.localdomain/resource/foo',
+                            'id' => 'http://localhost.localdomain/resource/foo',
                         ],
-                        '@id' => 'http://localhost.localdomain/embedded/bar',
+                        'id' => 'http://localhost.localdomain/embedded/bar',
                     ],
-                    '@id' => 'http://localhost.localdomain/resource/foo',
+                    'id' => 'http://localhost.localdomain/resource/foo',
                 ]
             ]
         ];
@@ -1081,7 +1078,7 @@ class JsonLDTest extends TestCase
         $object = new TestAsset\Entity('foo', 'Foo');
         $object->first_child  = new TestAsset\EmbeddedEntityWithBackReference('bar', $object);
         $entity = new Entity($object, 'foo');
-        $idProperty = new Property('@id');
+        $idProperty = new Property('id');
         $idProperty->setRoute('hostname/resource', ['id' => 'foo']);
         $entity->getProperties()->add($idProperty);
 
@@ -1190,7 +1187,7 @@ class JsonLDTest extends TestCase
                 },
                 $this->createNestedCollectionMetadataMap(1),
                 [
-                    '@id' => 'http://localhost.localdomain/contacts',
+                    'id' => 'http://localhost.localdomain/contacts',
                     'totalItems' => 3,
                     'collection' => [
                         [
@@ -1198,23 +1195,23 @@ class JsonLDTest extends TestCase
                             'second_child' => null,
                             'first_child'  => [
                                 'parent' => [
-                                    '@id' => 'http://localhost.localdomain/resource/foo',
+                                    'id' => 'http://localhost.localdomain/resource/foo',
                                 ],
-                                '@id' => 'http://localhost.localdomain/embedded/bar',
+                                'id' => 'http://localhost.localdomain/embedded/bar',
                             ],
-                            '@id' => 'http://localhost.localdomain/resource/foo',
+                            'id' => 'http://localhost.localdomain/resource/foo',
                         ],
                         [
                             'name'         => 'Bar',
                             'first_child'  => null,
                             'second_child' => null,
-                            '@id'          => 'http://localhost.localdomain/resource/bar',
+                            'id'          => 'http://localhost.localdomain/resource/bar',
                         ],
                         [
                             'name'         => 'Baz',
                             'first_child'  => null,
                             'second_child' => null,
-                            '@id'          => 'http://localhost.localdomain/resource/baz',
+                            'id'          => 'http://localhost.localdomain/resource/baz',
                         ],
                     ],
                     '@context' => 'http://www.w3.org/ns/hydra/context.jsonld',
@@ -1256,7 +1253,7 @@ class JsonLDTest extends TestCase
                 },
                 $this->createNestedCollectionMetadataMap(1),
                 [
-                    '@id' => 'http://localhost.localdomain/contacts',
+                    'id' => 'http://localhost.localdomain/contacts',
                     'totalItems' => 2,
                     'collection' => [
                         [
@@ -1264,19 +1261,19 @@ class JsonLDTest extends TestCase
                             'second_child' => null,
                             'first_child'  => [
                                 [
-                                    '@id' => 'http://localhost.localdomain/resource/foo',
+                                    'id' => 'http://localhost.localdomain/resource/foo',
                                 ],
                                 [
-                                    '@id' => 'http://localhost.localdomain/resource/bar',
+                                    'id' => 'http://localhost.localdomain/resource/bar',
                                 ]
                             ],
-                            '@id' => 'http://localhost.localdomain/resource/foo',
+                            'id' => 'http://localhost.localdomain/resource/foo',
                         ],
                         [
                             'name'         => 'Bar',
                             'first_child'  => null,
                             'second_child' => null,
-                            '@id'          => 'http://localhost.localdomain/resource/bar',
+                            'id'          => 'http://localhost.localdomain/resource/bar',
                         ],
                     ],
                     '@context' => 'http://www.w3.org/ns/hydra/context.jsonld',
@@ -1375,7 +1372,7 @@ class JsonLDTest extends TestCase
             $metadata->get('ZFTest\JsonLD\Plugin\TestAsset\Entity')
         );
         $properties = $entity->getProperties();
-        $this->assertFalse($properties->has('@id'));
+        $this->assertFalse($properties->has('id'));
     }
 
     public function testCreateEntityWithoutForcedSelfProperties()
@@ -1393,7 +1390,7 @@ class JsonLDTest extends TestCase
         $this->plugin->setMetadataMap($metadata);
         $entity = $this->plugin->createEntity($object, 'hostname/resource', 'id');
         $properties = $entity->getProperties();
-        $this->assertFalse($properties->has('@id'));
+        $this->assertFalse($properties->has('id'));
         $this->assertFalse($properties->has('self'));
     }
 
@@ -1422,7 +1419,7 @@ class JsonLDTest extends TestCase
             $metadata->get('ZFTest\JsonLD\Plugin\TestAsset\Collection')
         );
         $properties = $collection->getProperties();
-        $this->assertFalse($properties->has('@id'));
+        $this->assertFalse($properties->has('id'));
     }
 
     public function testCreateCollectionWithoutForcedSelfProperties()
@@ -1455,7 +1452,7 @@ class JsonLDTest extends TestCase
         $method = new \ReflectionMethod($this->plugin, 'extractCollection');
         $method->setAccessible(true);
         $result = $method->invoke($this->plugin, $collection);
-        $this->assertTrue(isset($result[0]['@id']));
+        $this->assertTrue(isset($result[0]['id']));
     }
 
     public function assertIsEntity($entity)
@@ -1496,13 +1493,13 @@ class JsonLDTest extends TestCase
             'id'  => 'identifier',
         ], 'identifier');
         $properties = $item->getProperties();
-        $self  = new Property('@id');
+        $self  = new Property('id');
         $self->setRoute('resource')->setRouteParams(['id' => 'identifier']);
         $properties->add($self);
 
         $result = $this->plugin->renderEntity($item);
 
-        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', '@id', $result);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', 'id', $result);
         $this->assertArrayHasKey('foo', $result);
         $this->assertEquals('bar', $result['foo']);
     }
@@ -1516,13 +1513,13 @@ class JsonLDTest extends TestCase
 
         $item  = new Entity($item, 'identifier');
         $properties = $item->getProperties();
-        $self  = new Property('@id');
+        $self  = new Property('id');
         $self->setRoute('resource')->setRouteParams(['id' => 'identifier']);
         $properties->add($self);
 
         $result = $this->plugin->renderEntity($item);
 
-        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', '@id', $result);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', 'id', $result);
         $this->assertArrayHasKey('foo', $result);
         $this->assertEquals('bar', $result['foo']);
     }
@@ -1537,13 +1534,13 @@ class JsonLDTest extends TestCase
         $item  = new JsonLDTestAsset\ArraySerializable();
         $item  = new Entity(new JsonLDTestAsset\ArraySerializable(), 'identifier');
         $properties = $item->getProperties();
-        $self  = new Property('@id');
+        $self  = new Property('id');
         $self->setRoute('resource')->setRouteParams(['id' => 'identifier']);
         $properties->add($self);
 
         $result = $this->plugin->renderEntity($item);
 
-        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', '@id', $result);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', 'id', $result);
         $this->assertArrayHasKey('foo', $result);
         $this->assertEquals('bar', $result['foo']);
     }
@@ -1557,13 +1554,13 @@ class JsonLDTest extends TestCase
         $item  = new JsonLDTestAsset\ArraySerializable();
         $item  = new Entity(new JsonLDTestAsset\ArraySerializable(), 'identifier');
         $properties = $item->getProperties();
-        $self  = new Property('@id');
+        $self  = new Property('id');
         $self->setRoute('resource')->setRouteParams(['id' => 'identifier']);
         $properties->add($self);
 
         $result = $this->plugin->renderEntity($item);
 
-        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', '@id', $result);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource/identifier', 'id', $result);
         $this->assertArrayHasKey('foo', $result);
         $this->assertEquals('bar', $result['foo']);
     }
@@ -1582,13 +1579,13 @@ class JsonLDTest extends TestCase
         $collection->setCollectionRoute('resource');
         $collection->setEntityRoute('resource');
         $properties = $collection->getProperties();
-        $self  = new Property('@id');
+        $self  = new Property('id');
         $self->setRoute('resource');
         $properties->add($self);
 
         $result = $this->plugin->renderCollection($collection);
 
-        $this->assertPropertyEquals('http://localhost.localdomain/resource', '@id', $result);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource', 'id', $result);
 
         $this->assertArrayHasKey('member', $result);
         $this->assertInternalType('array', $result['member']);
@@ -1597,7 +1594,7 @@ class JsonLDTest extends TestCase
         foreach ($result['member'] as $key => $item) {
             $id = $key + 1;
 
-            $this->assertPropertyEquals('http://localhost.localdomain/resource/' . $id, '@id', $item);
+            $this->assertPropertyEquals($id, 'id', $item);
             $this->assertArrayHasKey('id', $item, var_export($item, 1));
             $this->assertEquals($id, $item['id']);
             $this->assertArrayHasKey('foo', $item);
@@ -1623,15 +1620,15 @@ class JsonLDTest extends TestCase
         $collection->setCollectionRoute('resource');
         $collection->setEntityRoute('resource');
         $properties  = $collection->getProperties();
-        $idProperty = new Property('@id');
+        $idProperty = new Property('id');
         $idProperty->setRoute('resource');
         $properties->add($idProperty);
 
         $result = $this->plugin->renderCollection($collection);
 
         $this->assertInternalType('array', $result, var_export($result, 1));
-        $this->assertPropertyEquals('http://localhost.localdomain/resource', '@id', $result);
-        $this->assertPropertyEquals('http://localhost.localdomain/resource?page=3', '@id', $result['view']);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource', 'id', $result);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource?page=3', 'id', $result['view']);
         $this->assertPropertyEquals('http://localhost.localdomain/resource', 'firstPage', $result['view']);
         $this->assertPropertyEquals('http://localhost.localdomain/resource?page=20', 'lastPage', $result['view']);
         $this->assertPropertyEquals('http://localhost.localdomain/resource?page=2', 'previousPage', $result['view']);
@@ -1644,7 +1641,7 @@ class JsonLDTest extends TestCase
         foreach ($result['member'] as $key => $item) {
             $id = $key + 11;
 
-            $this->assertPropertyEquals('http://localhost.localdomain/resource/' . $id, '@id', $item);
+            $this->assertPropertyEquals($id, 'id', $item);
             $this->assertArrayHasKey('id', $item, var_export($item, 1));
             $this->assertEquals($id, $item['id']);
             $this->assertArrayHasKey('foo', $item);
@@ -1769,7 +1766,7 @@ class JsonLDTest extends TestCase
             'name'   => 'matthew',
             'github' => 'weierophinney',
         ], 'matthew');
-        $property = new Property('@id');
+        $property = new Property('id');
         $property->setRoute('user')->setRouteParams(['id' => 'matthew']);
         $child->getProperties()->add($property);
 
@@ -1778,7 +1775,7 @@ class JsonLDTest extends TestCase
             'id'   => 'identifier',
             'user' => $child,
         ], 'identifier');
-        $property = new Property('@id');
+        $property = new Property('id');
         $property->setRoute('resource')->setRouteParams(['id' => 'identifier']);
         $item->getProperties()->add($property);
 
@@ -1787,12 +1784,12 @@ class JsonLDTest extends TestCase
         $this->assertInternalType('array', $result, var_export($result, 1));
         $this->assertArrayHasKey('user', $result);
         $user = $result['user'];
-        $this->assertRelationalPropertyContains('/user/matthew', '@id', $user);
+        $this->assertRelationalPropertyContains('/user/matthew', 'id', $user);
 
         foreach ($child->entity as $key => $value) {
             if ($key === 'id') {
-                $this->assertArrayHasKey('@id', $user);
-                $this->assertContains($value, $user['@id']);
+                $this->assertArrayHasKey('id', $user);
+                $this->assertContains($value, $user['id']);
                 continue;
             }
             $this->assertArrayHasKey($key, $user);
@@ -1809,7 +1806,7 @@ class JsonLDTest extends TestCase
             'name'   => 'matthew',
             'github' => 'weierophinney',
         ], 'matthew');
-        $property = new Property('@id');
+        $property = new Property('id');
         $property->setRoute('user')->setRouteParams(['id' => 'matthew']);
         $child->getProperties()->add($property);
 
@@ -1825,7 +1822,7 @@ class JsonLDTest extends TestCase
         $collection->setCollectionRoute('resource');
         $collection->setEntityRoute('resource');
         $properties = $collection->getProperties();
-        $self  = new Property('@id');
+        $self  = new Property('id');
         $self->setRoute('resource');
         $properties->add($self);
 
@@ -1837,12 +1834,12 @@ class JsonLDTest extends TestCase
         foreach ($collection as $item) {
             $this->assertArrayHasKey('user', $item);
             $user = $item['user'];
-            $this->assertRelationalPropertyContains('/user/matthew', '@id', $user);
+            $this->assertRelationalPropertyContains('/user/matthew', 'id', $user);
 
             foreach ($child->entity as $key => $value) {
                 if ($key === 'id') {
-                    $this->assertArrayHasKey('@id', $user);
-                    $this->assertContains($value, $user['@id']);
+                    $this->assertArrayHasKey('id', $user);
+                    $this->assertContains($value, $user['id']);
                     continue;
                 }
                 $this->assertArrayHasKey($key, $user);
@@ -1860,7 +1857,7 @@ class JsonLDTest extends TestCase
             'name'   => 'matthew',
             'github' => 'weierophinney',
         ], 'matthew');
-        $property = new Property('@id');
+        $property = new Property('id');
         $property->setRoute('user')->setRouteParams(['id' => 'matthew']);
         $child->getProperties()->add($property);
 
@@ -1880,7 +1877,7 @@ class JsonLDTest extends TestCase
         $collection->setCollectionRoute('resource');
         $collection->setEntityRoute('resource');
         $properties  = $collection->getProperties();
-        $idProperty = new Property('@id');
+        $idProperty = new Property('id');
         $idProperty->setRoute('resource');
         $properties->add($idProperty);
 
@@ -1892,12 +1889,12 @@ class JsonLDTest extends TestCase
             $this->assertArrayHasKey('user', $item, var_export($item, 1));
 
             $user = $item['user'];
-            $this->assertRelationalPropertyContains('/user/matthew', '@id', $user);
+            $this->assertRelationalPropertyContains('/user/matthew', 'id', $user);
 
             foreach ($child->entity as $key => $value) {
                 if ($key === 'id') {
-                    $this->assertArrayHasKey('@id', $user);
-                    $this->assertContains($value, $user['@id']);
+                    $this->assertArrayHasKey('id', $user);
+                    $this->assertContains($value, $user['id']);
                     continue;
                 }
                 $this->assertArrayHasKey($key, $user);
@@ -1934,14 +1931,14 @@ class JsonLDTest extends TestCase
         $collection->setCollectionRoute('resource');
         $collection->setEntityRoute('resource');
         $properties  = $collection->getProperties();
-        $idProperty = new Property('@id');
+        $idProperty = new Property('id');
         $idProperty->setRoute('resource');
         $properties->add($idProperty);
 
         $result = $this->plugin->renderCollection($collection);
 
         $this->assertInternalType('array', $result, var_export($result, 1));
-        $this->assertPropertyEquals('http://localhost.localdomain/resource', '@id', $result);
+        $this->assertPropertyEquals('http://localhost.localdomain/resource', 'id', $result);
 
         $this->assertArrayHasKey('member', $result);
         $this->assertInternalType('array', $result['member']);
@@ -1950,7 +1947,7 @@ class JsonLDTest extends TestCase
         foreach ($result['member'] as $key => $item) {
             $id = $key + 1;
 
-            $this->assertPropertyEquals('http://localhost.localdomain/resource/' . $id, '@id', $item);
+            $this->assertPropertyEquals('http://localhost.localdomain/resource/' . $id, 'id', $item);
             $this->assertArrayHasKey('name', $item, var_export($item, 1));
             $this->assertEquals($id, $item['name']);
             $this->assertArrayHasKey('foo', $item);

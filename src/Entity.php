@@ -44,7 +44,6 @@ class Entity implements Property\PropertyCollectionAwareInterface
         $names = [
             'entity' => 'entity',
             'id'     => 'id',
-            '@id'    => 'id',
         ];
         $name = strtolower($name);
         if (!in_array($name, array_keys($names))) {

@@ -75,7 +75,7 @@ class Metadata
     protected $properties = [];
 
     /**
-     * Whether to force the existance of a "@id" property. The JsonLD specification encourages it but it is not strictly
+     * Whether to force the existance of a "id" property. The JsonLD specification encourages it but it is not strictly
      * required.
      *
      * @var bool
@@ -545,7 +545,7 @@ class Metadata
     }
 
     /**
-     * Returns true if this entity should be forced to have a "@id" property.
+     * Returns true if this entity should be forced to have a "id" property.
      *
      * @return boolean
      */
@@ -555,7 +555,7 @@ class Metadata
     }
 
     /**
-     * Set whether to force the existance of "@id" properties.
+     * Set whether to force the existance of "id" properties.
      *
      * @param boolean $forceIDProperty A truthy value
      * @return $this

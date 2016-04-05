@@ -53,7 +53,7 @@ class Collection implements Property\PropertyCollectionAwareInterface
      *
      * @var string
      */
-    protected $entityIdentifierName = '@id';
+    protected $entityIdentifierName = 'id';
 
     /**
      * Name of the route parameter identifier for individual entities of the collection

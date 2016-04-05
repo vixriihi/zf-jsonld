@@ -106,7 +106,7 @@ class ChildEntitiesIntegrationTest extends TestCase
     public function setUpParentEntity()
     {
         $this->parent = (object) [
-            '@id'  => 'anakin',
+            'id'   => 'anakin',
             'name' => 'Anakin Skywalker',
         ];
         $entity = new Entity($this->parent, 'anakin');
@@ -122,7 +122,7 @@ class ChildEntitiesIntegrationTest extends TestCase
     public function setUpChildEntity($id, $name)
     {
         $this->child = (object) [
-            '@id'   => $id,
+            'id'   => $id,
             'name' => $name,
         ];
         $entity = new Entity($this->child, $id);
@@ -152,7 +152,7 @@ class ChildEntitiesIntegrationTest extends TestCase
         $collection->setPageSize(10);
         $collection->setCollectionName('child');
 
-        $property = new Property('@id');
+        $property = new Property('id');
         $property->setRoute('parent/child');
         $collection->getProperties()->add($property);
 
@@ -178,7 +178,7 @@ class ChildEntitiesIntegrationTest extends TestCase
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('@id', $test);
+        $this->assertObjectHasAttribute('id', $test);
         $this->assertObjectHasAttribute('some', $test);
         $this->assertEquals('http://localhost.localdomain/api/parent/anakin', $test->some);
     }
@@ -227,14 +227,14 @@ class ChildEntitiesIntegrationTest extends TestCase
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('@id', $test);
-        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->{'@id'});
+        $this->assertObjectHasAttribute('id', $test);
+        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->{'id'});
 
         $this->assertObjectHasAttribute('child', $test);
         $this->assertInternalType('array', $test->child);
 
         foreach ($test->child as $child) {
-            $this->assertObjectHasAttribute('@id', $child);
+            $this->assertObjectHasAttribute('id', $child);
             $this->assertObjectHasAttribute('some', $child);
             $this->assertRegexp(
                 '#^http://localhost.localdomain/api/parent/anakin/child/[^/]+$#',
@@ -295,7 +295,7 @@ class ChildEntitiesIntegrationTest extends TestCase
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('@id', $test);
+        $this->assertObjectHasAttribute('id', $test);
         $this->assertObjectHasAttribute('some', $test);
         $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child/luke', $test->some);
     }
@@ -322,14 +322,14 @@ class ChildEntitiesIntegrationTest extends TestCase
 
         $json = $this->renderer->render($model);
         $test = json_decode($json);
-        $this->assertObjectHasAttribute('@id', $test);
-        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->{'@id'});
+        $this->assertObjectHasAttribute('id', $test);
+        $this->assertEquals('http://localhost.localdomain/api/parent/anakin/child', $test->{'id'});
 
         $this->assertObjectHasAttribute('child', $test);
         $this->assertInternalType('array', $test->child);
 
         foreach ($test->child as $child) {
-            $this->assertObjectHasAttribute('@id', $child);
+            $this->assertObjectHasAttribute('id', $child);
             $this->assertObjectHasAttribute('some', $child);
             $this->assertRegexp(
                 '#^http://localhost.localdomain/api/parent/anakin/child/[^/]+$#',

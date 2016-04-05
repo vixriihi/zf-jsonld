@@ -75,7 +75,7 @@ class ResourceFactory
         $this->marshalMetadataProperties($metadata, $properties);
 
         $forceIDProperty = $metadata->getForceIDProperty();
-        if ($forceIDProperty && ! $properties->has('@id')) {
+        if ($forceIDProperty && ! $properties->has('id')) {
             $property = $this->marshalPropertyFromMetadata(
                 $metadata,
                 $object,
@@ -106,7 +106,7 @@ class ResourceFactory
         $this->marshalMetadataProperties($metadata, $properties);
 
         $forceIDProperty = $metadata->getForceIDProperty();
-        if ($forceIDProperty && ! $properties->has('@id')
+        if ($forceIDProperty && ! $properties->has('id')
             && ($metadata->hasUrl() || $metadata->hasRoute())
         ) {
             $property = $this->marshalPropertyFromMetadata($metadata, $object);
@@ -132,7 +132,7 @@ class ResourceFactory
         $object,
         $id = null,
         $routeIdentifierName = null,
-        $relation = '@id'
+        $relation = 'id'
     ) {
         $property = new Property($relation);
         if ($metadata->hasUrl()) {

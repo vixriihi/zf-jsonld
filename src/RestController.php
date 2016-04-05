@@ -122,9 +122,9 @@ class RestController extends HalRestController
 
         $jsonLDEntity = $this->createHalEntity($value);
 
-        if ($jsonLDEntity->getProperties()->has('@id')) {
+        if ($jsonLDEntity->getProperties()->has('id')) {
             $plugin = $this->plugin('JsonLD');
-            $idLink = $jsonLDEntity->getProperties()->get('@id');
+            $idLink = $jsonLDEntity->getProperties()->get('id');
             $idLinkUrl = $plugin->fromProperty($idLink);
 
             $response = $this->getResponse();
@@ -153,7 +153,7 @@ class RestController extends HalRestController
      */
     protected function prepareJsonLDCollection(JsonLDCollection $collection)
     {
-        if (! $collection->getProperties()->has('@id')) {
+        if (! $collection->getProperties()->has('id')) {
             $plugin = $this->plugin('JsonLD');
             $plugin->injectIDProperty($collection, $this->route);
         }
@@ -263,7 +263,7 @@ class RestController extends HalRestController
     protected function createHalEntity($entity)
     {
         if ($entity instanceof JsonLDEntity &&
-            ($entity->getProperties()->has('@id') || ! $entity->id)
+            ($entity->getProperties()->has('id') || ! $entity->id)
         ) {
             return $entity;
         }

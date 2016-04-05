@@ -52,7 +52,7 @@ class PropertyCollection implements Countable, IteratorAggregate
     public function add(Property $property, $overwrite = false)
     {
         $keyword = $property->getKeyword();
-        if (!isset($this->properties[$keyword]) || $overwrite || '@id' == $keyword) {
+        if (!isset($this->properties[$keyword]) || $overwrite || 'id' == $keyword) {
             $this->properties[$keyword] = $property;
             return $this;
         }

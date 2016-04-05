@@ -67,14 +67,14 @@ class PaginationInjector implements PaginationInjectorInterface
 
     private function injectIDPropertyNoPage(Collection $jsonLDCollection)
     {
-        $property = $this->createPaginationProperty('@id', $jsonLDCollection);
+        $property = $this->createPaginationProperty('id', $jsonLDCollection);
         $jsonLDCollection->getProperties()->add($property, true);
     }
 
     private function injectIDProperty(Collection $jsonLDCollection, PropertyCollection $pageCollection)
     {
         $page = $jsonLDCollection->getPage();
-        $property = $this->createPaginationProperty('@id', $jsonLDCollection, $page);
+        $property = $this->createPaginationProperty('id', $jsonLDCollection, $page);
         $pageCollection->add($property, true);
     }
 

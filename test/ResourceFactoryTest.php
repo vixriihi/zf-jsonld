@@ -116,9 +116,9 @@ class ResourceFactoryTest extends TestCase
         $this->assertInstanceof('ZF\JsonLD\Entity', $entity);
 
         $properties = $entity->getProperties();
-        $this->assertTrue($properties->has('@id'));
+        $this->assertTrue($properties->has('id'));
 
-        $idProperty = $properties->get('@id');
+        $idProperty = $properties->get('id');
         $params = $idProperty->getRouteParams();
 
         $this->assertArrayHasKey('test-1', $params);

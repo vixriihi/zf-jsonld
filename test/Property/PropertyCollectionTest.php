@@ -20,14 +20,14 @@ class PropertyCollectionTest extends TestCase
     public function testCanAddDiscretePropertyRelations()
     {
         $describedby = new Property('describedby');
-        $idLink = new Property('@id');
+        $idLink = new Property('id');
         $this->properties->add($describedby);
         $this->properties->add($idLink);
 
         $this->assertTrue($this->properties->has('describedby'));
         $this->assertSame($describedby, $this->properties->get('describedby'));
-        $this->assertTrue($this->properties->has('@id'));
-        $this->assertSame($idLink, $this->properties->get('@id'));
+        $this->assertTrue($this->properties->has('id'));
+        $this->assertSame($idLink, $this->properties->get('id'));
     }
 
     public function testCanAddDuplicatePropertyRelations()
@@ -71,7 +71,7 @@ class PropertyCollectionTest extends TestCase
     public function testCanIterateProperties()
     {
         $describedby = new Property('describedby');
-        $idLink = new Property('@id');
+        $idLink = new Property('id');
         $this->properties->add($describedby);
         $this->properties->add($idLink);
 
@@ -86,15 +86,15 @@ class PropertyCollectionTest extends TestCase
 
     public function testCannotDuplicateSelf()
     {
-        $first = new Property('@id');
-        $second = new Property('@id');
+        $first = new Property('id');
+        $second = new Property('id');
 
         $this->properties
             ->add($first)
             ->add($second);
 
-        $this->assertTrue($this->properties->has('@id'));
-        $this->assertInstanceOf('ZF\JsonLD\Property\Property', $this->properties->get('@id'));
-        $this->assertSame($second, $this->properties->get('@id'));
+        $this->assertTrue($this->properties->has('id'));
+        $this->assertInstanceOf('ZF\JsonLD\Property\Property', $this->properties->get('id'));
+        $this->assertSame($second, $this->properties->get('id'));
     }
 }

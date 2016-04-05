@@ -46,8 +46,8 @@ class PaginationInjectorTest extends TestCase
 
         $properties = $jsonLDCollection->getProperties();
         $links      = $properties->get('view')->getValue();
-        $this->assertTrue($properties->has('@id'));
-        $this->assertTrue($links->has('@id'));
+        $this->assertTrue($properties->has('id'));
+        $this->assertTrue($links->has('id'));
         $this->assertTrue($links->has('firstPage'));
         $this->assertTrue($links->has('lastPage'));
         $this->assertTrue($links->has('previousPage'));
@@ -63,8 +63,8 @@ class PaginationInjectorTest extends TestCase
 
         $properties = $jsonLDCollection->getProperties();
         $links      = $properties->get('view')->getValue();
-        $this->assertTrue($properties->has('@id'));
-        $this->assertTrue($properties->has('@id'));
+        $this->assertTrue($properties->has('id'));
+        $this->assertTrue($properties->has('id'));
         $this->assertTrue($links->has('firstPage'));
         $this->assertTrue($links->has('lastPage'));
         $this->assertFalse($links->has('previousPage'));
@@ -80,8 +80,8 @@ class PaginationInjectorTest extends TestCase
 
         $properties = $jsonLDCollection->getProperties();
         $links      = $properties->get('view')->getValue();
-        $this->assertTrue($properties->has('@id'));
-        $this->assertTrue($links->has('@id'));
+        $this->assertTrue($properties->has('id'));
+        $this->assertTrue($links->has('id'));
         $this->assertTrue($links->has('firstPage'));
         $this->assertTrue($links->has('lastPage'));
         $this->assertTrue($links->has('previousPage'));
@@ -96,7 +96,7 @@ class PaginationInjectorTest extends TestCase
         $injector->injectPaginationProperties($jsonLDCollection);
 
         $properties = $jsonLDCollection->getProperties();
-        $this->assertFalse($properties->has('@id'));
+        $this->assertFalse($properties->has('id'));
         $this->assertFalse($properties->has('view'));
     }
 
@@ -122,8 +122,8 @@ class PaginationInjectorTest extends TestCase
 
         $properties = $jsonLDCollection->getProperties();
         $links      = $properties->get('view')->getValue();
-        $this->assertEquals($collectionRoute, $properties->get('@id')->getRoute());
-        $this->assertEquals($collectionRoute, $links->get('@id')->getRoute());
+        $this->assertEquals($collectionRoute, $properties->get('id')->getRoute());
+        $this->assertEquals($collectionRoute, $links->get('id')->getRoute());
         $this->assertEquals($collectionRoute, $links->get('firstPage')->getRoute());
         $this->assertEquals($collectionRoute, $links->get('lastPage')->getRoute());
         $this->assertEquals($collectionRoute, $links->get('previousPage')->getRoute());
