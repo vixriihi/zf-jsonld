@@ -770,7 +770,7 @@ class JsonLD extends AbstractHelper implements
             ? $metadataMap->get($entity)
             : false;
 
-        if (! $metadata || ($metadata && $metadata->getForceIDProperty())) {
+        if (! $metadata || ($metadata && $metadata->getForceFullUriID())) {
             $this->injectIDProperty($jsonLDEntity, $route, $routeIdentifierName);
         }
 

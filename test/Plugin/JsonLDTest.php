@@ -1361,8 +1361,8 @@ class JsonLDTest extends TestCase
             'ZFTest\JsonLD\Plugin\TestAsset\Entity' => [
                 'hydrator'        => 'Zend\Hydrator\ObjectProperty',
                 'route_name'      => 'hostname/resource',
-                'properties'           => [],
-                'force_id_property'   => false,
+                'properties'          => [],
+                'force_full_uri_id'   => false,
             ],
         ]);
 
@@ -1384,7 +1384,7 @@ class JsonLDTest extends TestCase
                 'hydrator'        => 'Zend\Hydrator\ObjectProperty',
                 'route_name'      => 'hostname/resource',
                 'properties'           => [],
-                'force_id_property'   => false,
+                'force_full_uri_id'   => false,
             ],
         ]);
         $this->plugin->setMetadataMap($metadata);
@@ -1408,7 +1408,7 @@ class JsonLDTest extends TestCase
                 'route_name'        => 'hostname/contacts',
                 'entity_route_name' => 'hostname/embedded',
                 'properties'             => [],
-                'force_id_property'     => false,
+                'force_full_uri_id'     => false,
             ],
         ]);
 
@@ -1431,7 +1431,7 @@ class JsonLDTest extends TestCase
                 'route_name'        => 'hostname/contacts',
                 'entity_route_name' => 'hostname/embedded',
                 'properties'        => [],
-                'force_id_property' => false,
+                'force_full_uri_id' => false,
             ],
         ]);
         $this->plugin->setMetadataMap($metadata);

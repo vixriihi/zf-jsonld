@@ -122,13 +122,12 @@ class RestController extends HalRestController
 
         $jsonLDEntity = $this->createHalEntity($value);
 
+        $response = $this->getResponse();
+        $response->setStatusCode(201);
         if ($jsonLDEntity->getProperties()->has('id')) {
             $plugin = $this->plugin('JsonLD');
             $idLink = $jsonLDEntity->getProperties()->get('id');
             $idLinkUrl = $plugin->fromProperty($idLink);
-
-            $response = $this->getResponse();
-            $response->setStatusCode(201);
             $response->getHeaders()->addHeaderLine('Location', $idLinkUrl);
         }
 

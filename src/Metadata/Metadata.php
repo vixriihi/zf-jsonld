@@ -80,7 +80,7 @@ class Metadata
      *
      * @var bool
      */
-    protected $forceIDProperty = true;
+    protected $forceFullUriID = false;
 
     /**
      * Route to use to generate a id property for this entity
@@ -545,24 +545,24 @@ class Metadata
     }
 
     /**
-     * Returns true if this entity should be forced to have a "id" property.
+     * Returns true if this entity should be forced to have a full uri in "id" property.
      *
      * @return boolean
      */
-    public function getForceIDProperty()
+    public function getForceFullUriID()
     {
-        return $this->forceIDProperty;
+        return $this->forceFullUriID;
     }
 
     /**
-     * Set whether to force the existance of "id" properties.
+     * Set whether to force the existance of full uri in "id" properties.
      *
-     * @param boolean $forceIDProperty A truthy value
+     * @param boolean $forceFullUriID A truthy value
      * @return $this
      */
-    public function setForceIDProperty($forceIDProperty)
+    public function setForceFullUriID($forceFullUriID)
     {
-        $this->forceIDProperty = $forceIDProperty;
+        $this->forceFullUriID = $forceFullUriID;
         return $this;
     }
 }

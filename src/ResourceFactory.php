@@ -74,8 +74,8 @@ class ResourceFactory
         $properties = $jsonLDEntity->getProperties();
         $this->marshalMetadataProperties($metadata, $properties);
 
-        $forceIDProperty = $metadata->getForceIDProperty();
-        if ($forceIDProperty && ! $properties->has('id')) {
+        $forceFullUriID = $metadata->getForceFullUriID();
+        if ($forceFullUriID && ! $properties->has('id')) {
             $property = $this->marshalPropertyFromMetadata(
                 $metadata,
                 $object,
@@ -105,8 +105,8 @@ class ResourceFactory
         $properties = $jsonLDCollection->getProperties();
         $this->marshalMetadataProperties($metadata, $properties);
 
-        $forceIDProperty = $metadata->getForceIDProperty();
-        if ($forceIDProperty && ! $properties->has('id')
+        $forceFullUriID = $metadata->getForceFullUriID();
+        if ($forceFullUriID && ! $properties->has('id')
             && ($metadata->hasUrl() || $metadata->hasRoute())
         ) {
             $property = $this->marshalPropertyFromMetadata($metadata, $object);
